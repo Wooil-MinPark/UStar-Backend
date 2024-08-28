@@ -70,4 +70,5 @@ secrets.yml
 .gradletasknamecache
 .git-hooks/
 node_modules
-application.properties
+
+src/main/resources/application.properties
