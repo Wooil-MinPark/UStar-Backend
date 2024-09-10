@@ -1,6 +1,7 @@
 package com.wooil.ustar.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,6 +12,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -31,62 +37,10 @@ public class User {
     private String userPassword;
 
     @CreatedDate
-    @Column(name = "user_registration_date", nullable = false)
-    private LocalDate userRegistrationDate;
+    @Column(name = "user_created_at",nullable = false)
+    private LocalDateTime userCreatedAt;
 
-//    @CreatedDate
-//    @Column(name = "created_at",nullable = false)
-//    private LocalDateTime createdAt;
-//
-//    @LastModifiedDate
-//    @Column(name = "updated_at",nullable = false)
-//    private LocalDateTime updatedAt;
-
-    public Long getUserUid() {
-        return userUid;
-    }
-
-    public void setUserUid(Long userUid) {
-        this.userUid = userUid;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserPassword() {
-        return userPassword;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public LocalDate getUserRegistrationDate() {
-        return userRegistrationDate;
-    }
-
-    public void setUserRegistrationDate(LocalDate userRegistrationDate) {
-        this.userRegistrationDate = userRegistrationDate;
-    }
+    @LastModifiedDate
+    @Column(name = "user_updated_at",nullable = false)
+    private LocalDateTime userUpdatedAt;
 }
