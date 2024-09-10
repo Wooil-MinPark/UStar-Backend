@@ -9,6 +9,8 @@ spring.datasource.password=USERPASSWORD
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Hibernate JPA ?? (?? ??)
+# ddl-auto를 create를 하면 기존 column 제거하고 생성된다.
+# 그래서 domain 변경하면 create로 시작하고 update로 바꿔주자
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
