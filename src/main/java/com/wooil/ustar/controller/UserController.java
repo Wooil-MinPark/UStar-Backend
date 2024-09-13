@@ -1,6 +1,8 @@
 package com.wooil.ustar.controller;
 
 import com.wooil.ustar.domain.User;
+import com.wooil.ustar.dto.Login.LoginRequestDto;
+import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.service.UserService;
 import jakarta.validation.Valid;
@@ -34,5 +36,11 @@ public class UserController {
             log.error("Unexpected error during user registration", e);
             return ResponseEntity.internalServerError().body("An unexpected error occurred");
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto){
+        LoginResponseDto resp = userService.login(loginRequestDto);
+        return ResponseEntity.ok(resp);
     }
 }
