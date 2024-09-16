@@ -1,6 +1,9 @@
 package com.wooil.ustar.service;
 
+import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.domain.User;
+import com.wooil.ustar.dto.Login.LoginRequestDto;
+import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
 
     // 회원가입 서비스
@@ -33,9 +37,38 @@ public class UserService {
                 .userId(signUpRequestDto.getId())
                 .userName(signUpRequestDto.getName())
                 .userEmail(signUpRequestDto.getEmail())
-                .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()) )
+                .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()))
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByUserId(loginRequestDto.getUserId())
+                .orElseThrow(() ->new RuntimeException("User not found"));
+
+        // User Not found error
+        if (user == null) {
+            //  추후에 개선
+            return LoginResponseDto.builder()
+                    .accessToken("")
+                    .refreshToken("")
+                    .build();
+        }
+
+        // unauthorized error
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getUserPassword())) {
+            //  추후에 개선
+            throw new RuntimeException("Invalid password.");
+        }
+
+        // create jwt token when login success
+        String accessToken = jwtUtil.generateAccessToken(user.getUserId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
+
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

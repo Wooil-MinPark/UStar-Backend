@@ -22,3 +22,8 @@ spring.datasource.hikari.minimum-idle=5
 spring.datasource.hikari.idle-timeout=30000
 spring.datasource.hikari.max-lifetime=1800000
 spring.datasource.hikari.connection-timeout=20000
+
+# 30 min
+jwt.access-token-validity=1800
+# 2 week
+jwt.refresh-token-validity=1209600
