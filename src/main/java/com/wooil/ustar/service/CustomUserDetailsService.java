@@ -1,6 +1,8 @@
 package com.wooil.ustar.service;
 
 import com.wooil.ustar.domain.User;
+import com.wooil.ustar.enums.ErrorCode;
+import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(()->new UsernameNotFoundException("User not found with id: "+userId));
+                .orElseThrow(()->new CustomException(ErrorCode.LI_002,ErrorCode.LI_002.getMessage()+"user id: "+userId));
 
         return new org.springframework.security.core.userdetails.User(user.getUserId(),user.getUserPassword(), Collections.emptyList());
     }
