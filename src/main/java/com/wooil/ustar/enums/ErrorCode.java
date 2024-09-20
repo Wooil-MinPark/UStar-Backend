@@ -24,6 +24,9 @@ public enum ErrorCode {
 
     // [로그인] 실패: 사용자 찾을 수 없음 (404)
     LI_002("user not found"),
+
+    // [토큰] 실패: 유효하지 않는 refresh token
+    TK_001("invalid refresh token"),
     ;
     ;
     private String message;

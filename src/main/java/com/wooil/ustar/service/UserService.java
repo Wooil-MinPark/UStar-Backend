@@ -47,7 +47,11 @@ public class UserService {
 
             return userRepository.save(user);
 
-        } catch (Exception e) {
+        } catch (CustomException e){
+            log.error(e.getMessage());
+            throw new CustomException(e.getErrorCode(), e.getMessage());
+        }
+        catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
@@ -84,7 +88,10 @@ public class UserService {
                     .refreshToken(refreshToken)
                     .build();
 
-        } catch (Exception e) {
+        } catch (CustomException e){
+            log.error(e.getMessage());
+            throw new CustomException(e.getErrorCode(), e.getMessage());
+        }catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
