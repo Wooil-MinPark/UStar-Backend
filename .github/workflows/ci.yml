@@ -39,17 +39,14 @@ jobs:
         run: chmod +x gradlew
 
       - name: Verify MySQL connection
-        env:
-          PORT: ${{ job.services.mysql.ports[3306] }}
         run: |
-          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
-            sleep 1
-          done
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port 3306 -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES;"
 
       - name: Run tests
-        run: ./gradlew test
+      - run: ./gradlew test --info
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
