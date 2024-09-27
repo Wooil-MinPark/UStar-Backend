@@ -5,13 +5,16 @@ on:
     branches:
       - 'main'
       - 'develop'
-      - 'feat/**'
     tags:
       - 'v*'
   pull_request:
     branches:
       - 'develop'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag for the Docker image'
+        required: true
 
 jobs:
   build:
@@ -75,7 +78,9 @@ jobs:
       - name: Set Docker image tag
         id: set_tag
         run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "IMAGE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ $GITHUB_REF == refs/tags/* ]]; then
             echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           else
             echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_OUTPUT
