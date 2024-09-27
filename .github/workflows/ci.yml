@@ -32,12 +32,25 @@ jobs:
         run: |
           docker run --name mysql -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} -e MYSQL_DATABASE=${{ secrets.DB_NAME }} -p 3306:3306 -d mysql:8.0
           # Wait for MySQL to be ready
-          timeout 30s bash -c 'until docker exec mysql mysql -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} -e "SELECT 1"; do sleep 1; done'
+          for i in {1..30}; do
+            if docker exec mysql mysqladmin ping -h localhost -u root -p${{ secrets.DB_PASSWORD }} --silent; then
+              echo "MySQL is up and running"
+              break
+            fi
+            echo "Waiting for MySQL to start..."
+            sleep 2
+          done
+
+      - name: Create test user
+        run: |
+          docker exec mysql mysql -u root -p${{ secrets.DB_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ secrets.DB_USERNAME }}'@'%' IDENTIFIED BY '${{ secrets.DB_PASSWORD }}';"
+          docker exec mysql mysql -u root -p${{ secrets.DB_PASSWORD }} -e "GRANT ALL PRIVILEGES ON *.* TO '${{ secrets.DB_USERNAME }}'@'%';"
+          docker exec mysql mysql -u root -p${{ secrets.DB_PASSWORD }} -e "FLUSH PRIVILEGES;"
 
       - name: Run tests
         run: ./gradlew test --info
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
