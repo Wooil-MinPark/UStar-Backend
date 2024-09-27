@@ -16,6 +16,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - uses: actions/checkout@v3
 
@@ -30,6 +40,10 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: Build with Gradle
         run: ./gradlew build
