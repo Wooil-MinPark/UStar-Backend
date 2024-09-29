@@ -21,10 +21,11 @@ public class TokenService {
     public String refreshAccessToken(String refreshToken) {
         try{
             if (jwtUtil.validateToken(refreshToken)) {
-                String userId = jwtUtil.getUsernameFromToken(refreshToken);
-                User user = userRepository.findByUserId(userId)
+                String userEmail = jwtUtil.getUsernameFromToken(refreshToken);
+                /// 여기 에러코드 추가
+                User user = userRepository.findByUserEmail(userEmail)
                         .orElseThrow(() -> new RuntimeException("User not found"));
-                return jwtUtil.generateAccessToken(userId);
+                return jwtUtil.generateAccessToken(userEmail);
             }
             throw new CustomException(ErrorCode.TK_001,ErrorCode.TK_001.getMessage());
         }catch (CustomException e){

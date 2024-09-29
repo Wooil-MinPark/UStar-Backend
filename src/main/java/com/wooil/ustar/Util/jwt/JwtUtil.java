@@ -34,9 +34,9 @@ public class JwtUtil {
 
       username만 사용하는 것이 보안적으로 안전한지 확인해봐야함.
     */
-    public String generateAccessToken(String username) {
+    public String generateAccessToken(String userEmail) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userEmail)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
                 .signWith(key)
@@ -49,9 +49,9 @@ public class JwtUtil {
  
       username만 사용하는 것이 보안적으로 안전한지 확인해봐야함.
     */
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(String userEmail) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userEmail)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(key)

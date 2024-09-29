@@ -13,8 +13,8 @@ public enum ErrorCode {
     // [Global] 실패: 서버 에러 (500)
     serverError("server error"),
 
-    // [회원가입] 실패: user id 중복 시 (409)
-    SU_001("userId already exists"),
+    // [회원가입] 실패: user name 중복 시 (409)
+    SU_001("userName already exists"),
 
     // [회원가입] 실패: email 중복 시 (409)
     SU_002("email already exists"),

@@ -30,9 +30,6 @@ public class User {
     @Column(name = "user_email", nullable = false,unique = true)
     private String userEmail;
 
-    @Column(name = "user_id", nullable = false,unique = true)
-    private String userId;
-
     @Column(name = "user_password", nullable = false)
     private String userPassword;
 
@@ -46,11 +43,10 @@ public class User {
 
     // Builder 생성자를 재정의한 이유는 created_at와 updated_at가 자동 생성돼야하기 때문.
     @Builder
-    public User(Long userUid, String userName, String userEmail, String userId, String userPassword) {
+    public User(Long userUid, String userName, String userEmail, String userPassword) {
         this.userUid = userUid;
         this.userName = userName;
         this.userEmail = userEmail;
-        this.userId = userId;
         this.userPassword = userPassword;
     }
 }
