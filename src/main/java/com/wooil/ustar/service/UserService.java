@@ -79,8 +79,8 @@ public class UserService {
             }
 
             // create jwt token when login success
-            String accessToken = jwtUtil.generateAccessToken(user.getUserName());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getUserName());
+            String accessToken = jwtUtil.generateAccessToken(user.getUserEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
 
             return LoginResponseDto.builder()
                 .accessToken(accessToken)
