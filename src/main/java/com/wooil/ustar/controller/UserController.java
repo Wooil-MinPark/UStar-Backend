@@ -12,9 +12,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -22,13 +24,57 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
+
+
+    /*
+     * [GET] check username duplicated
+     * */
+    @GetMapping("/userNameDup")
+    public ResponseEntity<APIResponse<Boolean>> checkUserNameDup(@RequestParam String userName) {
+        try {
+            boolean isDuplicated = userService.isUserNameDuplicated(userName);
+            APIResponse<Boolean> resp = new APIResponse<>(isDuplicated);
+            return ResponseEntity.ok(resp);
+        } catch (CustomException e) {
+            APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error during check userName duplicated", e);
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
+                ErrorCode.serverError.getMessage());
+            return ResponseEntity.ok(resp);
+        }
+    }
+
+    /*
+     * [GET] check email duplicated
+     * */
+    @GetMapping("/userEmailDup")
+    public ResponseEntity<APIResponse<Boolean>> checkUserEmailDup(@RequestParam String userEmail) {
+        try {
+            boolean isDuplicated = userService.isUserEmailDuplicated(userEmail);
+            APIResponse<Boolean> resp = new APIResponse<>(isDuplicated);
+            return ResponseEntity.ok(resp);
+        } catch (CustomException e) {
+            APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error during check userName duplicated", e);
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
+                ErrorCode.serverError.getMessage());
+            return ResponseEntity.ok(resp);
+        }
+    }
+
 
     /*
      * [POST] 회원 가입 API
      * */
     @PostMapping("/signup")
-    public ResponseEntity<APIResponse<String>> signUpUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<APIResponse<String>> signUpUser(
+        @Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         try {
             User user = userService.signUpUser(signUpRequestDto);
             APIResponse<String> resp = new APIResponse<>(true);
@@ -38,23 +84,27 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError, ErrorCode.serverError.getMessage());
+            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError,
+                ErrorCode.serverError.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<APIResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<APIResponse<LoginResponseDto>> login(
+        @RequestBody LoginRequestDto loginRequestDto) {
         try {
             LoginResponseDto responseDto = userService.login(loginRequestDto);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(true,responseDto);
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false,e.getErrorCode(), e.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(),
+                e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError, ErrorCode.serverError.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError,
+                ErrorCode.serverError.getMessage());
             return ResponseEntity.ok(resp);
         }
     }

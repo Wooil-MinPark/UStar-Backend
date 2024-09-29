@@ -5,6 +5,7 @@ import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
+import com.wooil.ustar.dto.user.UpdateUserDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
@@ -12,6 +13,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,19 +41,18 @@ public class UserService {
             }
             // 비밀번호 암호화 구현 예정
             User user = User.builder()
-                    .userId(signUpRequestDto.getId())
-                    .userName(signUpRequestDto.getName())
-                    .userEmail(signUpRequestDto.getEmail())
-                    .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()))
-                    .build();
+                .userId(signUpRequestDto.getId())
+                .userName(signUpRequestDto.getName())
+                .userEmail(signUpRequestDto.getEmail())
+                .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()))
+                .build();
 
             return userRepository.save(user);
 
-        } catch (CustomException e){
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode(), e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
@@ -62,15 +63,16 @@ public class UserService {
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         try {
             User user = userRepository.findByUserId(loginRequestDto.getUserId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.LI_002, ErrorCode.LI_002.getMessage()));
+                .orElseThrow(
+                    () -> new CustomException(ErrorCode.LI_002, ErrorCode.LI_002.getMessage()));
 
             // User Not found error
             if (user == null) {
                 //  추후에 개선
                 return LoginResponseDto.builder()
-                        .accessToken("")
-                        .refreshToken("")
-                        .build();
+                    .accessToken("")
+                    .refreshToken("")
+                    .build();
             }
 
             // unauthorized error
@@ -84,17 +86,36 @@ public class UserService {
             String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
 
             return LoginResponseDto.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
 
-        } catch (CustomException e){
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode(), e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
+    }
 
+    // check userName is duplicated
+    public boolean isUserNameDuplicated(String userName) {
+        try {
+            return userRepository.existsByUserName(userName);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+        }
+    }
+
+    // check userEmail is duplicated
+    public boolean isUserEmailDuplicated(String email) {
+        try {
+            return userRepository.existsByUserEmail(email);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+        }
     }
 }
