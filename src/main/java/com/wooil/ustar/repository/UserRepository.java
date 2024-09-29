@@ -1,16 +1,15 @@
 package com.wooil.ustar.repository;
 
+import java.util.Optional;
 import com.wooil.ustar.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
 public interface UserRepository extends JpaRepository<User, Long> {
-    boolean existsByUserId(String userId);
 
     boolean existsByUserEmail(String userEmail);
 
     boolean existsByUserName(String userName);
 
-    Optional<User> findByUserId(String userId);
+    Optional<User> findByUserEmail(String userEmail);
+    Optional<User> findByUserName(String userName);
 }

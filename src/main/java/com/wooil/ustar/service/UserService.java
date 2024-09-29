@@ -33,7 +33,7 @@ public class UserService {
     // 아이디,이메일이 unique=true여서 이미 있는지 검사
     public User signUpUser(@NotNull SignUpRequestDto signUpRequestDto) {
         try {
-            if (userRepository.existsByUserId(signUpRequestDto.getId())) {
+            if (userRepository.existsByUserName(signUpRequestDto.getName())) {
                 throw new CustomException(ErrorCode.SU_001, ErrorCode.SU_001.getMessage());
             }
             if (userRepository.existsByUserEmail(signUpRequestDto.getEmail())) {
@@ -41,7 +41,6 @@ public class UserService {
             }
             // 비밀번호 암호화 구현 예정
             User user = User.builder()
-                .userId(signUpRequestDto.getId())
                 .userName(signUpRequestDto.getName())
                 .userEmail(signUpRequestDto.getEmail())
                 .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()))
@@ -56,13 +55,11 @@ public class UserService {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
-
-
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         try {
-            User user = userRepository.findByUserId(loginRequestDto.getUserId())
+            User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail())
                 .orElseThrow(
                     () -> new CustomException(ErrorCode.LI_002, ErrorCode.LI_002.getMessage()));
 
@@ -82,8 +79,8 @@ public class UserService {
             }
 
             // create jwt token when login success
-            String accessToken = jwtUtil.generateAccessToken(user.getUserId());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
+            String accessToken = jwtUtil.generateAccessToken(user.getUserEmail());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
 
             return LoginResponseDto.builder()
                 .accessToken(accessToken)

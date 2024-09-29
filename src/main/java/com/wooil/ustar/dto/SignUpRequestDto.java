@@ -9,10 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpRequestDto {
-
-    @NotBlank(message = "ID is required")
-    private String id;
-
     @NotBlank(message = "Name is required")
     private String name;
 
