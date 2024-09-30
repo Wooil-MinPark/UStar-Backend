@@ -28,13 +28,13 @@ public class TokenService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
                 return jwtUtil.generateAccessToken(userEmail);
             }
-            throw new CustomException(ErrorCode.TOKEN_001, ErrorCode.TOKEN_001.getMessage());
+            throw new CustomException(ErrorCode.TOKEN_001);
         } catch (CustomException e) {
             log.error(e.getMessage());
-            throw new CustomException(e.getErrorCode(), e.getMessage());
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
 
     }

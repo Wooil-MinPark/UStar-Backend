@@ -34,10 +34,10 @@ public class UserService {
     public User signUpUser(@NotNull SignUpRequestDto signUpRequestDto) {
         try {
             if (userRepository.existsByUserName(signUpRequestDto.getName())) {
-                throw new CustomException(ErrorCode.USER_001, ErrorCode.USER_001.getMessage());
+                throw new CustomException(ErrorCode.USER_001);
             }
             if (userRepository.existsByUserEmail(signUpRequestDto.getEmail())) {
-                throw new CustomException(ErrorCode.USER_002, ErrorCode.USER_002.getMessage());
+                throw new CustomException(ErrorCode.USER_002);
             }
             // 비밀번호 암호화 구현 예정
             User user = User.builder()
@@ -50,10 +50,10 @@ public class UserService {
 
         } catch (CustomException e) {
             log.error(e.getMessage());
-            throw new CustomException(e.getErrorCode(), e.getMessage());
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.unknown,e.getMessage());
         }
     }
 
@@ -61,7 +61,7 @@ public class UserService {
         try {
             User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail())
                 .orElseThrow(
-                    () -> new CustomException(ErrorCode.USER_004, ErrorCode.USER_004.getMessage()));
+                    () -> new CustomException(ErrorCode.USER_004));
 
             // User Not found error
             if (user == null) {
@@ -89,10 +89,10 @@ public class UserService {
 
         } catch (CustomException e) {
             log.error(e.getMessage());
-            throw new CustomException(e.getErrorCode(), e.getMessage());
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
     }
 
@@ -112,7 +112,7 @@ public class UserService {
             return userRepository.existsByUserEmail(email);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
     }
 
@@ -120,12 +120,12 @@ public class UserService {
     public User updateUser(CustomUserDetails userDetails, UpdateUserDto updateUserDto) {
         try {
             User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
-                () -> new CustomException(ErrorCode.USER_004, ErrorCode.USER_004.getMessage()));
+                () -> new CustomException(ErrorCode.USER_004));
 
             if (updateUserDto.getName() != null && !user.getUserName()
                 .equals(updateUserDto.getName()) && userRepository.existsByUserName(
                 updateUserDto.getName())) {
-                throw new CustomException(ErrorCode.USER_001, ErrorCode.USER_001.getMessage());
+                throw new CustomException(ErrorCode.USER_001);
             }
 
             if(updateUserDto.getName() != null){
@@ -139,7 +139,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
     }
 }
