@@ -1,5 +1,8 @@
 package com.wooil.ustar.Util.jwt;
 
+import com.wooil.ustar.enums.ErrorCode;
+import com.wooil.ustar.exception.CustomException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -65,8 +68,10 @@ public class JwtUtil {
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.TOKEN_002);
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new CustomException(ErrorCode.TOKEN_001);
         }
     }
 

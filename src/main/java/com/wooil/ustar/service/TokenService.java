@@ -15,24 +15,24 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class TokenService {
+
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
     public String refreshAccessToken(String refreshToken) {
-        try{
+        try {
             if (jwtUtil.validateToken(refreshToken)) {
                 String userEmail = jwtUtil.getUsernameFromToken(refreshToken);
                 /// 여기 에러코드 추가
                 User user = userRepository.findByUserEmail(userEmail)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("User not found"));
                 return jwtUtil.generateAccessToken(userEmail);
             }
-            throw new CustomException(ErrorCode.TK_001,ErrorCode.TK_001.getMessage());
-        }catch (CustomException e){
+            throw new CustomException(ErrorCode.TOKEN_001, ErrorCode.TOKEN_001.getMessage());
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode(), e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
         }
