@@ -2,10 +2,12 @@ package com.wooil.ustar.service;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
+import com.wooil.ustar.convert.UserConvert;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
+import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
@@ -53,7 +55,7 @@ public class UserService {
             throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown,e.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
     }
 
@@ -122,18 +124,32 @@ public class UserService {
             User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_004));
 
-            if (updateUserDto.getName() != null && !user.getUserName()
-                .equals(updateUserDto.getName()) && userRepository.existsByUserName(
-                updateUserDto.getName())) {
+            if (updateUserDto.getUserName() != null && !user.getUserName()
+                .equals(updateUserDto.getUserName()) && userRepository.existsByUserName(
+                updateUserDto.getUserName())) {
                 throw new CustomException(ErrorCode.USER_001);
             }
 
-            if(updateUserDto.getName() != null){
-                user.setUserName(updateUserDto.getName());
+            if (updateUserDto.getUserName() != null) {
+                user.setUserName(updateUserDto.getUserName());
             }
 
             return userRepository.save(user);
 
+        } catch (CustomException e) {
+            log.error(e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
+        }
+    }
+
+    public GetUserDto getUser(CustomUserDetails userDetails) {
+        try {
+            User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_004));
+            return UserConvert.user2GetUserDto(user);
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw e;

@@ -6,6 +6,7 @@ import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.response.APIResponse;
+import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
@@ -46,8 +47,7 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
-                ErrorCode.serverError.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -66,8 +66,7 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
-                ErrorCode.serverError.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -88,8 +87,7 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError,
-                ErrorCode.serverError.getMessage());
+            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -102,13 +100,11 @@ public class UserController {
             APIResponse<LoginResponseDto> resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(),
-                e.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError,
-                ErrorCode.serverError.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -116,10 +112,26 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<APIResponse<User>> updateUser(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @RequestBody UpdateUserDto updateUserDto)
-    {
+        @RequestBody UpdateUserDto updateUserDto) {
         User user = userService.updateUser(userDetails, updateUserDto);
         APIResponse<User> resp = new APIResponse<>(true);
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/whoami")
+    public ResponseEntity<APIResponse<GetUserDto>> getUser(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            GetUserDto user = userService.getUser(userDetails);
+            APIResponse<GetUserDto> resp = new APIResponse<>(true, user);
+            return ResponseEntity.ok(resp);
+        }  catch (CustomException e) {
+            APIResponse<GetUserDto> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error while fetching user information", e);
+            APIResponse<GetUserDto> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            return ResponseEntity.ok(resp);
+        }
     }
 }

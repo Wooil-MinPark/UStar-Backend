@@ -1,5 +1,6 @@
 package com.wooil.ustar.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -35,10 +36,12 @@ public class User {
 
     @CreatedDate
     @Column(name = "user_created_at",nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime userCreatedAt;
 
     @LastModifiedDate
     @Column(name = "user_updated_at",nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime userUpdatedAt;
 
     // Builder 생성자를 재정의한 이유는 created_at와 updated_at가 자동 생성돼야하기 때문.
