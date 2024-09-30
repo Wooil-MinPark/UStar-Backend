@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,7 +48,8 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -66,7 +68,8 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -87,7 +90,8 @@ public class UserController {
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -100,11 +104,13 @@ public class UserController {
             APIResponse<LoginResponseDto> resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(),
+                e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }
@@ -125,12 +131,32 @@ public class UserController {
             GetUserDto user = userService.getUser(userDetails);
             APIResponse<GetUserDto> resp = new APIResponse<>(true, user);
             return ResponseEntity.ok(resp);
-        }  catch (CustomException e) {
-            APIResponse<GetUserDto> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+        } catch (CustomException e) {
+            APIResponse<GetUserDto> resp = new APIResponse<>(false, e.getErrorCode(),
+                e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while fetching user information", e);
-            APIResponse<GetUserDto> resp = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+            APIResponse<GetUserDto> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
+            return ResponseEntity.ok(resp);
+        }
+    }
+
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<APIResponse<Void>> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        try{
+            userService.deleteUser(userDetails);
+            APIResponse<Void> resp = new APIResponse<>(true);
+            return ResponseEntity.ok(resp);
+        }catch (CustomException e) {
+            APIResponse<Void> resp = new APIResponse<>(false, e.getErrorCode(),
+                e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error while fetching user information", e);
+            APIResponse<Void> resp = new APIResponse<>(false, ErrorCode.serverError,
+                e.getMessage());
             return ResponseEntity.ok(resp);
         }
     }

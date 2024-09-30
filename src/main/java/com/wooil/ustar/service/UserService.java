@@ -158,4 +158,19 @@ public class UserService {
             throw new CustomException(ErrorCode.unknown, e.getMessage());
         }
     }
+
+    public void deleteUser(CustomUserDetails userDetails) {
+        try {
+            User user = userRepository.findByUserEmail(userDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
+
+            userRepository.delete(user);
+        } catch (CustomException e) {
+            log.error(e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.unknown, e.getMessage());
+        }
+    }
 }
