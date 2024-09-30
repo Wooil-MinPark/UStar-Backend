@@ -1,10 +1,12 @@
 package com.wooil.ustar.controller;
 
+import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.response.APIResponse;
+import com.wooil.ustar.dto.user.UpdateUserDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.service.UserService;
@@ -12,8 +14,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -107,5 +111,15 @@ public class UserController {
                 ErrorCode.serverError.getMessage());
             return ResponseEntity.ok(resp);
         }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<APIResponse<User>> updateUser(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestBody UpdateUserDto updateUserDto)
+    {
+        User user = userService.updateUser(userDetails, updateUserDto);
+        APIResponse<User> resp = new APIResponse<>(true);
+        return ResponseEntity.ok(resp);
     }
 }

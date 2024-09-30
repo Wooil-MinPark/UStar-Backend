@@ -13,21 +13,24 @@ public enum ErrorCode {
     // [Global] 실패: 서버 에러 (500)
     serverError("server error"),
 
-    // [회원가입] 실패: user name 중복 시 (409)
-    SU_001("userName already exists"),
+    // when username duplicated.
+    USER_001("userName already exists"),
 
-    // [회원가입] 실패: email 중복 시 (409)
-    SU_002("email already exists"),
+    // when user email duplicated.
+    USER_002("email already exists"),
 
-    // [로그인] 실패: 비밀번호 불일치 (401)
-    LI_001("invalid password"),
+    // invalid password when login
+    USER_003("invalid password"),
 
-    // [로그인] 실패: 사용자 찾을 수 없음 (404)
-    LI_002("user not found"),
+    // user not found when login
+    USER_004("user not found"),
 
-    // [토큰] 실패: 유효하지 않는 refresh token
-    TK_001("invalid refresh token"),
+    // invalid JWT token
+    TOKEN_001("invalid JWT token"),
+
+    // JWT token expired
+    TOKEN_002("JWT token expired"),
     ;
-    ;
+
     private String message;
 }

@@ -1,5 +1,13 @@
 package com.wooil.ustar.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
@@ -8,6 +16,7 @@ import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,16 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+
     @Mock
     private UserRepository userRepository;
 
@@ -49,13 +51,13 @@ public class UserServiceTest {
         final String password = "password";
         final String encodedPassword = "encodedPassword";
 
-        signUpRequestDto = new SignUpRequestDto( name, email, password);
+        signUpRequestDto = new SignUpRequestDto(name, email, password);
         loginRequestDto = new LoginRequestDto(email, password);
         user = User.builder()
-                .userName(name)
-                .userEmail(email)
-                .userPassword(encodedPassword)
-                .build();
+            .userName(name)
+            .userEmail(email)
+            .userPassword(encodedPassword)
+            .build();
     }
 
     @Test
@@ -97,17 +99,19 @@ public class UserServiceTest {
     @Test
     void signUpUser_DuplicatedID() {
         when(userRepository.existsByUserName(anyString())).thenReturn(true);
-        CustomException exception = assertThrows(CustomException.class, () -> userService.signUpUser(signUpRequestDto));
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.signUpUser(signUpRequestDto));
 
-        assertEquals(ErrorCode.SU_001, exception.getErrorCode());
+        assertEquals(ErrorCode.USER_001, exception.getErrorCode());
     }
 
     @Test
     void signUpUser_DuplicatedEmail() {
         when(userRepository.existsByUserEmail(anyString())).thenReturn(true);
-        CustomException exception = assertThrows(CustomException.class, () -> userService.signUpUser(signUpRequestDto));
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.signUpUser(signUpRequestDto));
 
-        assertEquals(ErrorCode.SU_002, exception.getErrorCode());
+        assertEquals(ErrorCode.USER_002, exception.getErrorCode());
     }
 
     @Test
@@ -135,8 +139,9 @@ public class UserServiceTest {
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        CustomException exception = assertThrows(CustomException.class, () -> userService.login(loginRequestDto));
-        assertEquals(ErrorCode.LI_001, exception.getErrorCode());
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.login(loginRequestDto));
+        assertEquals(ErrorCode.USER_003, exception.getErrorCode());
     }
 
     @Test
@@ -144,8 +149,8 @@ public class UserServiceTest {
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
 
         CustomException exception = assertThrows(CustomException.class,
-                () -> userService.login(loginRequestDto));
+            () -> userService.login(loginRequestDto));
 
-        assertEquals(ErrorCode.LI_002, exception.getErrorCode());
+        assertEquals(ErrorCode.USER_004, exception.getErrorCode());
     }
 }

@@ -1,6 +1,7 @@
 package com.wooil.ustar.service;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
+import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
@@ -13,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +34,10 @@ public class UserService {
     public User signUpUser(@NotNull SignUpRequestDto signUpRequestDto) {
         try {
             if (userRepository.existsByUserName(signUpRequestDto.getName())) {
-                throw new CustomException(ErrorCode.SU_001, ErrorCode.SU_001.getMessage());
+                throw new CustomException(ErrorCode.USER_001, ErrorCode.USER_001.getMessage());
             }
             if (userRepository.existsByUserEmail(signUpRequestDto.getEmail())) {
-                throw new CustomException(ErrorCode.SU_002, ErrorCode.SU_002.getMessage());
+                throw new CustomException(ErrorCode.USER_002, ErrorCode.USER_002.getMessage());
             }
             // 비밀번호 암호화 구현 예정
             User user = User.builder()
@@ -61,7 +61,7 @@ public class UserService {
         try {
             User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail())
                 .orElseThrow(
-                    () -> new CustomException(ErrorCode.LI_002, ErrorCode.LI_002.getMessage()));
+                    () -> new CustomException(ErrorCode.USER_004, ErrorCode.USER_004.getMessage()));
 
             // User Not found error
             if (user == null) {
@@ -75,7 +75,7 @@ public class UserService {
             // unauthorized error
             if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getUserPassword())) {
                 //  추후에 개선
-                throw new CustomException(ErrorCode.LI_001, ErrorCode.LI_001.getMessage());
+                throw new CustomException(ErrorCode.USER_003, ErrorCode.USER_003.getMessage());
             }
 
             // create jwt token when login success
@@ -110,6 +110,33 @@ public class UserService {
     public boolean isUserEmailDuplicated(String email) {
         try {
             return userRepository.existsByUserEmail(email);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+        }
+    }
+
+
+    public User updateUser(CustomUserDetails userDetails, UpdateUserDto updateUserDto) {
+        try {
+            User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_004, ErrorCode.USER_004.getMessage()));
+
+            if (updateUserDto.getName() != null && !user.getUserName()
+                .equals(updateUserDto.getName()) && userRepository.existsByUserName(
+                updateUserDto.getName())) {
+                throw new CustomException(ErrorCode.USER_001, ErrorCode.USER_001.getMessage());
+            }
+
+            if(updateUserDto.getName() != null){
+                user.setUserName(updateUserDto.getName());
+            }
+
+            return userRepository.save(user);
+
+        } catch (CustomException e) {
+            log.error(e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
