@@ -23,20 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: ⚙️ Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
+      - name: 📝 Create application.properties
+        run: |
+          cat << EOF > src/main/resources/application.properties
+          ${{secrets.APPLICATION_PROPERTIES}}
+          EOF
+
+      - name: 📕 Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Start MySQL
+      - name: ⏰ Start MySQL
         run: |
           docker run --name mysql -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} -e MYSQL_DATABASE=${{ secrets.DB_NAME }} -e MYSQL_USER=${{ secrets.DB_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} -p 3306:3306 -d mysql:8.0
 
-      - name: MySQL Health Check
+      - name: ✅ MySQL Health Check
         run: |
           echo "Waiting for MySQL to be ready..."
           for i in {1..60}; do
@@ -52,19 +58,19 @@ jobs:
             exit 1
           fi
 
-      - name: Verify MySQL Connection
+      - name: ✅ Verify MySQL Connection
         run: |
           echo "Verifying MySQL connection..."
           docker exec mysql mysql -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES;"
 
-      - name: Print Database Connection Info
+      - name: ✅ Print Database Connection Info
         run: |
           echo "Database connection info:"
           echo "URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC"
           echo "Username: ${{ secrets.DB_USERNAME }}"
           echo "Password: [PROTECTED]"
 
-      - name: Run tests
+      - name: 🔥 Run tests
         run: |
           ./gradlew test --info
         env:
@@ -72,10 +78,10 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-      - name: Build with Gradle
+      - name: 🛠️ Build with Gradle
         run: ./gradlew build
 
-      - name: Set Docker image tag
+      - name: ⚙️ Set Docker image tag
         id: set_tag
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -86,7 +92,7 @@ jobs:
             echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build Docker image
+      - name: 🛠️ Build Docker image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} .
 
       - name: Login to Docker Hub
@@ -95,5 +101,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push Docker image
+      - name: 🚀 Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }}
