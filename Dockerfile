@@ -13,4 +13,6 @@ FROM openjdk:17-jdk-slim
 VOLUME /tmp
 ARG JAR_FILE=/workspace/app/build/libs/*.jar
 COPY --from=build ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY --from=build /workspace/app/src/main/resources/application.properties /app/application.properties
+COPY --from=build /workspace/app/src/main/resources/application-dev.properties /app/application-dev.properties
+ENTRYPOINT ["java", "-jar", "/app.jar"]
