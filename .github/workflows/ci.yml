@@ -29,10 +29,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 📝 Create application.properties
+      - name: 📝 Create application-dev.properties
         run: |
-          cat << EOF > src/main/resources/application.properties
-          ${{secrets.APPLICATION_PROPERTIES}}
+          cat << EOF > src/main/resources/application-dev.properties
+          ${{secrets.APPLICATION_DEV_PROPERTIES}}
           EOF
 
       - name: 📕 Grant execute permission for gradlew
