@@ -35,7 +35,7 @@ public class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @Mock
     private JwtUtil jwtUtil;
 
     @InjectMocks

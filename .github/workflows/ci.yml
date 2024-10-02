@@ -36,7 +36,7 @@ jobs:
           cat << EOF > src/main/resources/application-dev.properties
           ${{secrets.APPLICATION_DEV_PROPERTIES}}
           EOF
-
+          
           # For test resources
           mkdir -p src/test/resources
           cat << EOF > src/test/resources/application.properties
