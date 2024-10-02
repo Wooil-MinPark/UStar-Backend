@@ -72,7 +72,7 @@ jobs:
 
       - name: 🔥 Run tests
         run: |
-          ./gradlew test --info
+          ./gradlew test --info -Dspring.profiles.active=dev
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
