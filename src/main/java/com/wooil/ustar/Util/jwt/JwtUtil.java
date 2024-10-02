@@ -18,10 +18,10 @@ import java.util.Date;
 public class JwtUtil {
     private String secret;
 
-    @Value("${jwt.access-token-validity}")
+    @Value("${jwt.accessTokenValidity}")
     private long accessTokenValidity;
 
-    @Value("${jwt.refresh-token-validity}")
+    @Value("${jwt.refreshTokenValidity}")
     private long refreshTokenValidity;
 
     private Key key;
