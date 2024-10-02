@@ -31,7 +31,17 @@ jobs:
 
       - name: 📝 Create application-dev.properties
         run: |
+          # For main resources
           cat << EOF > src/main/resources/application-dev.properties
+          ${{secrets.APPLICATION_DEV_PROPERTIES}}
+          EOF
+
+          # For test resources
+          mkdir -p src/test/resources
+          cat << EOF > src/test/resources/application.properties
+          spring.profiles.active=dev
+          EOF
+          cat << EOF > src/test/resources/application-dev.properties
           ${{secrets.APPLICATION_DEV_PROPERTIES}}
           EOF
 
@@ -72,7 +82,7 @@ jobs:
 
       - name: 🔥 Run tests
         run: |
-          ./gradlew test --info -Dspring.profiles.active=dev
+          ./gradlew test --info
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
