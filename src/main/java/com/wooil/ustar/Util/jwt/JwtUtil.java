@@ -5,9 +5,7 @@ import com.wooil.ustar.exception.CustomException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -17,21 +15,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
     private String secret;
-
-    @Value("${jwt.access-token-validity}")
     private long accessTokenValidity;
-
-    @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidity;
-
     private Key key;
 
-    @PostConstruct
-    public void init() {
+    public JwtUtil(@Value("${jwt.secret}") String secret,
+        @Value("${jwt.access-token-validity}") long accessTokenValidity,
+        @Value("${jwt.refresh-token-validity}") long refreshTokenValidity) {
+        this.secret = secret;
+        this.accessTokenValidity = accessTokenValidity;
+        this.refreshTokenValidity = refreshTokenValidity;
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
+
+//    @Value("${jwt.secret}")
+//    private String secret;
+//
+//    @Value("${jwt.access-token-validity}")
+//    private long accessTokenValidity;
+//
+//    @Value("${jwt.refresh-token-validity}")
+//    private long refreshTokenValidity;
+//
+//    private Key key;
+
+//    @PostConstruct
+//    public void init() {
+//        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+//    }
 
     /*
       Access Token 생성 함수
