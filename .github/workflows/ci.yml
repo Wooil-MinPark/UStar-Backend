@@ -49,37 +49,37 @@ jobs:
       - name: 📕 Grant execute permission for gradlew
         run: chmod +x gradlew
 
-#      - name: ⏰ Start MySQL
-#        run: |
-#          docker run --name mysql -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} -e MYSQL_DATABASE=${{ secrets.DB_NAME }} -e MYSQL_USER=${{ secrets.DB_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} -p 3306:3306 -d mysql:8.0
-#
-#      - name: ✅ MySQL Health Check
-#        run: |
-#          echo "Waiting for MySQL to be ready..."
-#          for i in {1..60}; do
-#            if docker exec mysql mysqladmin ping -h localhost -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} --silent; then
-#              echo "MySQL is ready!"
-#              break
-#            fi
-#            echo "Attempt $i: MySQL is not ready yet. Waiting..."
-#            sleep 10
-#          done
-#          if [ $i -eq 60 ]; then
-#            echo "MySQL did not become ready in time."
-#            exit 1
-#          fi
-#
-#      - name: ✅ Verify MySQL Connection
-#        run: |
-#          echo "Verifying MySQL connection..."
-#          docker exec mysql mysql -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES;"
-#
-#      - name: ✅ Print Database Connection Info
-#        run: |
-#          echo "Database connection info:"
-#          echo "URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC"
-#          echo "Username: ${{ secrets.DB_USERNAME }}"
-#          echo "Password: [PROTECTED]"
+      - name: ⏰ Start MySQL
+        run: |
+          docker run --name mysql -e MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }} -e MYSQL_DATABASE=${{ secrets.DB_NAME }} -e MYSQL_USER=${{ secrets.DB_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }} -p 3306:3306 -d mysql:8.0
+
+      - name: ✅ MySQL Health Check
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..60}; do
+            if docker exec mysql mysqladmin ping -h localhost -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Attempt $i: MySQL is not ready yet. Waiting..."
+            sleep 10
+          done
+          if [ $i -eq 60 ]; then
+            echo "MySQL did not become ready in time."
+            exit 1
+          fi
+
+      - name: ✅ Verify MySQL Connection
+        run: |
+          echo "Verifying MySQL connection..."
+          docker exec mysql mysql -u${{ secrets.DB_USERNAME }} -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES;"
+
+      - name: ✅ Print Database Connection Info
+        run: |
+          echo "Database connection info:"
+          echo "URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC"
+          echo "Username: ${{ secrets.DB_USERNAME }}"
+          echo "Password: [PROTECTED]"
 
       - name: Copy main resources to test resources
         run: |
@@ -89,41 +89,41 @@ jobs:
           ls -la src/test/resources
           echo "Contents of application-dev.properties:"
           cat src/test/resources/application-dev.properties || echo "File not found"
-#
-#      - name: 🔥 Run tests
-#        run: |
-#          ./gradlew test --info
-#        env:
-#          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
-#          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
-#          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-#
-#      - name: 🛠️ Build with Gradle
-#        run: ./gradlew build
-#
-#      - name: ⚙️ Set Docker image tag
-#        id: set_tag
-#        run: |
-#          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-#            echo "IMAGE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-#          elif [[ $GITHUB_REF == refs/tags/* ]]; then
-#            echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-#          else
-#            echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_OUTPUT
-#          fi
-#
-#      - name: 🛠️ Build Docker image
-#        run: |
-#          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} .
-#          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/ustar:latest
-#
-#      - name: Login to Docker Hub
-#        uses: docker/login-action@v2
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#
-#      - name: 🚀 Push Docker image
-#        run: |
-#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }}
-#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ustar:latest
+
+      - name: 🔥 Run tests
+        run: |
+          ./gradlew test --info
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: 🛠️ Build with Gradle
+        run: ./gradlew build
+
+      - name: ⚙️ Set Docker image tag
+        id: set_tag
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "IMAGE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🛠️ Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/ustar:latest
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🚀 Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ustar:latest
