@@ -15,8 +15,7 @@ ARG JAR_FILE=/workspace/app/build/libs/*.jar
 COPY --from=build ${JAR_FILE} app.jar
 
 # application.properties와 application-dev.properties 복사
-COPY src/main/resources/application.properties /app/application.properties
-COPY src/main/resources/application-dev.properties /app/application-dev.properties
+COPY src/main/resources/application-dev.properties /app/application.properties
 
 # ENTRYPOINT 수정
-ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.config.location=file:/app/application.properties,file:/app/application-dev.properties"]
+ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.config.location=file:/app/application.properties"]
