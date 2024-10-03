@@ -20,8 +20,8 @@ COPY src/main/resources/application-docker.properties /app/application.propertie
 # application.properties 내용 출력을 위한 스크립트 추가
 COPY <<EOF /app/start.sh
 #!/bin/sh
-echo "Contents of application.properties:"
-cat /app/application.properties
+#echo "Contents of application.properties:"
+#cat /app/application.properties
 echo "Starting application..."
 java -jar /app.jar --spring.config.location=file:/app/application.properties
 EOF

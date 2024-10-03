@@ -83,10 +83,6 @@ jobs:
         run: |
           mkdir -p src/test/resources
           cp src/main/resources/application*.properties src/test/resources/
-          echo "Contents of src/test/resources directory:"
-          ls -la src/test/resources
-          echo "Contents of application-dev.properties:"
-          cat src/test/resources/application-dev.properties || echo "File not found"
 
       - name: 🔥 Run tests
         run: |
