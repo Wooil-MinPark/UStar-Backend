@@ -36,15 +36,6 @@ jobs:
           cat << EOF > src/main/resources/application-dev.properties
           ${{secrets.APPLICATION_DEV_PROPERTIES}}
           EOF
-          
-          # For test resources
-          mkdir -p src/test/resources
-          cat << EOF > src/test/resources/application.properties
-          spring.profiles.active=dev
-          EOF
-          cat << EOF > src/test/resources/application-dev.properties
-          ${{secrets.APPLICATION_DEV_PROPERTIES}}
-          EOF
 
       - name: 📕 Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -88,7 +79,6 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/${{ secrets.DB_NAME }}?useSSL=false&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          SPRING_JWT_SECRET: ${{ secrets.TEST_SECRET }}
 
       - name: 🛠️ Build with Gradle
         run: ./gradlew build
