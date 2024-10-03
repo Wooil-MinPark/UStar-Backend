@@ -30,12 +30,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 📝 Create application-dev.properties
+      - name: 📝 Create and verify application-dev.properties
         run: |
           # For main resources
           cat << EOF > src/main/resources/application-dev.properties
           ${{secrets.APPLICATION_DEV_PROPERTIES}}
           EOF
+
+          echo "Contents of src/main/resources/application-dev.properties:"
+          cat src/main/resources/application-dev.properties | sed 's/^/    /'
+
+          echo "File size of application-dev.properties:"
+          ls -l src/main/resources/application-dev.properties | awk '{print $5}'
+
+          echo "Number of lines in application-dev.properties:"
+          wc -l < src/main/resources/application-dev.properties
 
       - name: 📕 Grant execute permission for gradlew
         run: chmod +x gradlew
