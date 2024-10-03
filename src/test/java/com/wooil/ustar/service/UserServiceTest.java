@@ -38,6 +38,7 @@ public class UserServiceTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @InjectMocks
     private UserService userService;
 
     private SignUpRequestDto signUpRequestDto;
