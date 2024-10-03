@@ -34,7 +34,7 @@ jobs:
         run: |
           # For main resources
           cat << EOF > src/main/resources/application-dev.properties
-          ${{secrets.APPLICATION_DEV_PROPERTIES}}
+          ${{secrets.APPLICATION_PROPERTIES}}
           EOF
 
           echo "Contents of src/main/resources/application-dev.properties:"
