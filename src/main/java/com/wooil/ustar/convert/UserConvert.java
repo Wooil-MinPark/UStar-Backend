@@ -7,15 +7,16 @@ import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 
 public class UserConvert {
+
     public static GetUserDto user2GetUserDto(User user) {
-        try{
+        try {
             return GetUserDto.builder()
-            .userUid(user.getUserUid())
-            .userName(user.getUserName())
-            .userEmail(user.getUserEmail())
-            .build();
+                .userUid(user.getUserUid())
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .build();
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
 
     }

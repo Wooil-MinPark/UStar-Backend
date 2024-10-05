@@ -34,7 +34,7 @@ public class TokenService {
             throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
 
     }
