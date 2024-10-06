@@ -1,38 +1,24 @@
 package com.wooil.ustar.controller;
 
-import com.wooil.ustar.domain.User;
-import com.wooil.ustar.dto.SignUpRequestDto;
+import com.wooil.ustar.dto.UserDto;
 import com.wooil.ustar.service.UserService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
-@RestController
-@RequestMapping("/api/user")
-@RequiredArgsConstructor
-public class UserController {
-    private final UserService userService;
+import java.util.List;
 
-    /*
-     * [POST] 회원 가입 API
-     * */
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUpUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
-        try {
-            User user = userService.signUpUser(signUpRequestDto);
-            return ResponseEntity.ok("success");
-        } catch (RuntimeException e) {
-            log.warn("Failed to sign up user: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error during user registration", e);
-            return ResponseEntity.internalServerError().body("An unexpected error occurred");
-        }
+@RestController
+public class UserController {
+    UserService userService;
+
+    @Autowired
+    UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/user/find")
+    public List<UserDto> findAllUsers() {
+        return userService.findAllUsers();
     }
 }
