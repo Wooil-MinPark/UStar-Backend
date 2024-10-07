@@ -55,7 +55,7 @@ public class UserService {
             throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 
@@ -94,7 +94,7 @@ public class UserService {
             throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ public class UserService {
             return userRepository.existsByUserName(userName);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, ErrorCode.unknown.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, ErrorCode.GLOBAL_001.getMessage());
         }
     }
 
@@ -114,7 +114,7 @@ public class UserService {
             return userRepository.existsByUserEmail(email);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 
@@ -155,7 +155,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 
@@ -170,7 +170,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.unknown, e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
     }
 }

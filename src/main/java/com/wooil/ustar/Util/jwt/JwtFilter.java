@@ -70,7 +70,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
 
-    private void handleCustomException(HttpServletResponse response, CustomException e) throws IOException {
+    private void handleCustomException(HttpServletResponse response, CustomException e)
+        throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         APIResponse<?> apiResponse = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
@@ -80,7 +81,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private void handleException(HttpServletResponse response, Exception e) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        APIResponse<?> apiResponse = new APIResponse<>(false, ErrorCode.serverError, e.getMessage());
+        APIResponse<?> apiResponse = new APIResponse<>(false, ErrorCode.GLOBAL_002, e.getMessage());
         response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
 }
