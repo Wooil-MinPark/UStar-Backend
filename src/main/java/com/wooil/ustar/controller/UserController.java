@@ -160,7 +160,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/deleteUser")
+    @DeleteMapping("/delete")
     public ResponseEntity<APIResponse<Void>> deleteUser(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
