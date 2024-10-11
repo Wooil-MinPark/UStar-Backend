@@ -8,6 +8,8 @@ import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.response.APIResponse;
 import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserDto;
+import com.wooil.ustar.dto.user.UserEmailCheckRequestDto;
+import com.wooil.ustar.dto.user.UserNameCheckRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.service.UserService;
@@ -37,11 +39,12 @@ public class UserController {
     /*
      * [GET] check username duplicated
      * */
-    @GetMapping("/signup/userNameDup")
-    public ResponseEntity<APIResponse<Boolean>> checkUserNameDup(@RequestParam String userName) {
+    @PostMapping("/signup/userNameDup")
+    public ResponseEntity<APIResponse<Boolean>> checkUserNameDup(
+        @RequestBody UserNameCheckRequestDto request) {
         try {
-            boolean isDuplicated = userService.isUserNameDuplicated(userName);
-            APIResponse<Boolean> resp = new APIResponse<>(isDuplicated);
+            boolean isDuplicated = userService.isUserNameDuplicated(request.getUserName());
+            APIResponse<Boolean> resp = new APIResponse<>(true,isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
@@ -57,11 +60,12 @@ public class UserController {
     /*
      * [GET] check email duplicated
      * */
-    @GetMapping("/signup/userEmailDup")
-    public ResponseEntity<APIResponse<Boolean>> checkUserEmailDup(@RequestParam String userEmail) {
+    @PostMapping("/signup/userEmailDup")
+    public ResponseEntity<APIResponse<Boolean>> checkUserEmailDup(
+        @RequestBody UserEmailCheckRequestDto request) {
         try {
-            boolean isDuplicated = userService.isUserEmailDuplicated(userEmail);
-            APIResponse<Boolean> resp = new APIResponse<>(isDuplicated);
+            boolean isDuplicated = userService.isUserEmailDuplicated(request.getUserEmail());
+            APIResponse<Boolean> resp = new APIResponse<>(true,isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
