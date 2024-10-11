@@ -124,9 +124,20 @@ public class UserController {
     public ResponseEntity<APIResponse<User>> updateUser(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody UpdateUserDto updateUserDto) {
-        User user = userService.updateUser(userDetails, updateUserDto);
-        APIResponse<User> resp = new APIResponse<>(true);
-        return ResponseEntity.ok(resp);
+        try{
+            User user = userService.updateUser(userDetails, updateUserDto);
+            APIResponse<User> resp = new APIResponse<>(true,user);
+            return ResponseEntity.ok(resp);
+        }catch (CustomException e) {
+            APIResponse<User> resp = new APIResponse<>(false, e.getErrorCode(),
+                e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error while fetching user information", e);
+            APIResponse<User> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+                e.getMessage());
+            return ResponseEntity.ok(resp);
+        }
     }
 
     @GetMapping("/whoami")
