@@ -1,13 +1,15 @@
 package com.wooil.ustar.controller;
 
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
+import com.wooil.ustar.convert.UserConvert;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.response.APIResponse;
 import com.wooil.ustar.dto.user.GetUserDto;
-import com.wooil.ustar.dto.user.UpdateUserDto;
+import com.wooil.ustar.dto.user.UpdateUserRequestDto;
+import com.wooil.ustar.dto.user.UpdateUserResDto;
 import com.wooil.ustar.dto.user.UserEmailCheckRequestDto;
 import com.wooil.ustar.dto.user.UserNameCheckRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
@@ -22,10 +24,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -45,7 +45,7 @@ public class UserController {
         @RequestBody UserNameCheckRequestDto request) {
         try {
             boolean isDuplicated = userService.isUserNameDuplicated(request.getUserName());
-            APIResponse<Boolean> resp = new APIResponse<>(true,isDuplicated);
+            APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
@@ -66,7 +66,7 @@ public class UserController {
         @RequestBody UserEmailCheckRequestDto request) {
         try {
             boolean isDuplicated = userService.isUserEmailDuplicated(request.getUserEmail());
-            APIResponse<Boolean> resp = new APIResponse<>(true,isDuplicated);
+            APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
@@ -121,20 +121,21 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<APIResponse<User>> updateUser(
+    public ResponseEntity<APIResponse<UpdateUserResDto>> updateUser(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @RequestBody UpdateUserDto updateUserDto) {
-        try{
-            User user = userService.updateUser(userDetails, updateUserDto);
-            APIResponse<User> resp = new APIResponse<>(true,user);
+        @RequestBody UpdateUserRequestDto request) {
+        try {
+            User user = userService.updateUser(userDetails, request);
+            UpdateUserResDto resDto = UserConvert.user2UpdateUserResDto(user);
+            APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, resDto);
             return ResponseEntity.ok(resp);
-        }catch (CustomException e) {
-            APIResponse<User> resp = new APIResponse<>(false, e.getErrorCode(),
+        } catch (CustomException e) {
+            APIResponse<UpdateUserResDto> resp = new APIResponse<>(false, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while fetching user information", e);
-            APIResponse<User> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            APIResponse<UpdateUserResDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
