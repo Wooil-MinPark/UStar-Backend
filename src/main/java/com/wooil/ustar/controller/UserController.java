@@ -37,7 +37,7 @@ public class UserController {
     /*
      * [GET] check username duplicated
      * */
-    @GetMapping("/userNameDup")
+    @GetMapping("/signup/userNameDup")
     public ResponseEntity<APIResponse<Boolean>> checkUserNameDup(@RequestParam String userName) {
         try {
             boolean isDuplicated = userService.isUserNameDuplicated(userName);
@@ -57,7 +57,7 @@ public class UserController {
     /*
      * [GET] check email duplicated
      * */
-    @GetMapping("/userEmailDup")
+    @GetMapping("/signup/userEmailDup")
     public ResponseEntity<APIResponse<Boolean>> checkUserEmailDup(@RequestParam String userEmail) {
         try {
             boolean isDuplicated = userService.isUserEmailDuplicated(userEmail);
