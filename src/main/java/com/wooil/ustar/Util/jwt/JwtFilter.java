@@ -7,6 +7,7 @@ import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.service.CustomUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,8 +44,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     userEmail = jwtUtil.getUsernameFromToken(jwt);
                 } catch (ExpiredJwtException e) {
                     throw new CustomException(ErrorCode.TOKEN_002);
-                } catch (SignatureException e) {
+                } catch (SignatureException | MalformedJwtException e) {
                     throw new CustomException(ErrorCode.TOKEN_001);
+                } catch (Exception e) {
+                    throw new CustomException(ErrorCode.GLOBAL_001);
                 }
             }
 

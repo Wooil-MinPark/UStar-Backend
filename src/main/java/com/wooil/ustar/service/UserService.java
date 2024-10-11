@@ -8,7 +8,7 @@ import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.user.GetUserDto;
-import com.wooil.ustar.dto.user.UpdateUserDto;
+import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
@@ -119,7 +119,7 @@ public class UserService {
     }
 
 
-    public User updateUser(CustomUserDetails userDetails, UpdateUserDto updateUserDto) {
+    public User updateUser(CustomUserDetails userDetails, UpdateUserRequestDto updateUserDto) {
         try {
             User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_004));

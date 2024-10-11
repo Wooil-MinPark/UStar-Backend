@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UpdateUserDto {
-    private String userName;
+public class UserEmailCheckRequestDto {
+    private String userEmail;
 }

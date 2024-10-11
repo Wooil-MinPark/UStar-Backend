@@ -1,16 +1,15 @@
 package com.wooil.ustar.dto.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class GetUserDto {
-    private long userUid;
-    private String userEmail;
+@Getter
+@Setter
+public class UserNameCheckRequestDto {
+
     private String userName;
 }
