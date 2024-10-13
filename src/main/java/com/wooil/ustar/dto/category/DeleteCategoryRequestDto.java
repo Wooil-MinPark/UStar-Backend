@@ -11,5 +11,4 @@ import lombok.Setter;
 @Setter
 public class DeleteCategoryRequestDto {
     private Long categoryUid;
-
 }
