@@ -5,7 +5,7 @@ import com.wooil.ustar.domain.User;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
