@@ -8,10 +8,10 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user", indexes = {
+    @Index(name = "idx_user_email", columnList = "user_email")
+})
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
