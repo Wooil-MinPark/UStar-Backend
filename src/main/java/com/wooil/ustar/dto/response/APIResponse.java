@@ -33,4 +33,12 @@ public class APIResponse<T> {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }
+
+    /// for failed 2
+    public APIResponse(boolean isOk, ErrorCode errorCode, String errorMessage, T data) {
+        this.isOk = isOk;
+        this.data = null;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 }
