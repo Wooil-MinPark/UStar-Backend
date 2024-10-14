@@ -3,12 +3,13 @@ package com.wooil.ustar.service;
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.Category;
 import com.wooil.ustar.domain.User;
+import com.wooil.ustar.dto.category.CategoryResDto;
 import com.wooil.ustar.dto.category.CreateCategoryRequestDto;
 import com.wooil.ustar.dto.category.DeleteCategoryRequestDto;
-import com.wooil.ustar.dto.category.GetCategoryRequestDto;
 import com.wooil.ustar.dto.category.UpdateCategoryRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
+import com.wooil.ustar.mapper.CategoryMapper;
 import com.wooil.ustar.repository.CategoryRepository;
 import com.wooil.ustar.repository.UserRepository;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    public Category createCategory(CustomUserDetails userDetails,
+    public CategoryResDto createCategory(CustomUserDetails userDetails,
         CreateCategoryRequestDto request) {
         try {
             User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
@@ -38,7 +39,8 @@ public class CategoryService {
                 .build();
 
             user.addCategory(category);
-            return categoryRepository.save(category);
+            Category savedCategory = categoryRepository.save(category);
+            return CategoryMapper.toCategoryResDto(savedCategory);
 
         } catch (CustomException e) {
             log.error(e.getMessage());
@@ -50,10 +52,12 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public Set<Category> getAllCategoriesByUser(CustomUserDetails userDetails) {
-        try{
-            return categoryRepository.findCategoriesByUserEmail(userDetails.getUsername());
-        }catch (CustomException e) {
+    public Set<CategoryResDto> getAllCategoriesByUser(CustomUserDetails userDetails) {
+        try {
+            Set<Category> categories = categoryRepository.findCategoriesByUserEmail(
+                userDetails.getUsername());
+            return CategoryMapper.toCategoryResDtoSet(categories);
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw e;
         } catch (Exception e) {
@@ -62,12 +66,22 @@ public class CategoryService {
         }
     }
 
-    public Category getCategoryById(GetCategoryRequestDto request) {
-        try{
-            return categoryRepository.findByCategoryUid(
-                    request.getCategoryUid())
+    public CategoryResDto getCategoryById(CustomUserDetails userDetails, Long categoryUid) {
+        try {
+            User user = userRepository.findByUserEmail(userDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
+
+            Category category = categoryRepository.findByCategoryUid(
+                    categoryUid)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_001));
-        }catch (CustomException e) {
+
+            if (!category.getUser().getUserUid().equals(user.getUserUid())) {
+                throw new CustomException(ErrorCode.CATEGORY_002);
+            }
+
+            return CategoryMapper.toCategoryResDto(category);
+
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw e;
         } catch (Exception e) {
@@ -77,17 +91,30 @@ public class CategoryService {
     }
 
 
-
-    public Category updateCategory(CustomUserDetails userDetails,
+    public CategoryResDto updateCategory(CustomUserDetails userDetails,
         UpdateCategoryRequestDto request) {
         try {
+            User user = userRepository.findByUserEmail(userDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
+
             Category category = categoryRepository.findByCategoryUid(
                     request.getCategoryUid())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_001));
 
-            category.setCategoryName(request.getCategoryName());
-            category.setCategoryColor(request.getCategoryColor());
-            return categoryRepository.save(category);
+            if (!category.getUser().getUserUid().equals(user.getUserUid())) {
+                throw new CustomException(ErrorCode.CATEGORY_002);
+            }
+
+            if (request.getCategoryName() != null) {
+                category.setCategoryName(request.getCategoryName());
+            }
+
+            if (request.getCategoryColor() != null) {
+                category.setCategoryColor(request.getCategoryColor());
+            }
+
+            Category savedCategory = categoryRepository.save(category);
+            return CategoryMapper.toCategoryResDto(savedCategory);
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw e;
