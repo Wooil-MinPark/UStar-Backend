@@ -33,6 +33,9 @@ public enum ErrorCode {
 
     // Category not found
     CATEGORY_001("category not found"),
+
+    // permission denied category
+    CATEGORY_002("category permission denied"),
     ;
 
     private String message;
