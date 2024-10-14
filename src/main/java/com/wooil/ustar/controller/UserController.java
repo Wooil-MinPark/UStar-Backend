@@ -1,7 +1,6 @@
 package com.wooil.ustar.controller;
 
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
-import com.wooil.ustar.convert.UserConvert;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
@@ -14,6 +13,7 @@ import com.wooil.ustar.dto.user.UserEmailCheckRequestDto;
 import com.wooil.ustar.dto.user.UserNameCheckRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
+import com.wooil.ustar.mapper.UserMapper;
 import com.wooil.ustar.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -126,7 +126,7 @@ public class UserController {
         @RequestBody UpdateUserRequestDto request) {
         try {
             User user = userService.updateUser(userDetails, request);
-            UpdateUserResDto resDto = UserConvert.user2UpdateUserResDto(user);
+            UpdateUserResDto resDto = UserMapper.user2UpdateUserResDto(user);
             APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, resDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
