@@ -2,7 +2,6 @@ package com.wooil.ustar.service;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
-import com.wooil.ustar.convert.UserConvert;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
@@ -11,13 +10,14 @@ import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
+import com.wooil.ustar.mapper.UserMapper;
 import com.wooil.ustar.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -149,7 +149,7 @@ public class UserService {
         try {
             User user = userRepository.findByUserEmail(userDetails.getUsername()).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_004));
-            return UserConvert.user2GetUserDto(user);
+            return UserMapper.user2GetUserDto(user);
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw e;

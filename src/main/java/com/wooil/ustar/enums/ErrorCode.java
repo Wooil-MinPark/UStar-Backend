@@ -30,6 +30,12 @@ public enum ErrorCode {
 
     // JWT token expired
     TOKEN_002("JWT token was expired"),
+
+    // Category not found
+    CATEGORY_001("category not found"),
+
+    // permission denied category
+    CATEGORY_002("category permission denied"),
     ;
 
     private String message;

@@ -1,4 +1,4 @@
-package com.wooil.ustar.convert;
+package com.wooil.ustar.mapper;
 
 
 import com.wooil.ustar.domain.User;
@@ -7,7 +7,7 @@ import com.wooil.ustar.dto.user.UpdateUserResDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 
-public class UserConvert {
+public class UserMapper {
 
     public static GetUserDto user2GetUserDto(User user) {
         try {

@@ -1,4 +1,4 @@
-package com.wooil.ustar.dto.user;
+package com.wooil.ustar.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UpdateUserRequestDto {
-    private String userName;
+public class DeleteCategoryRequestDto {
+    private Long categoryUid;
 }
