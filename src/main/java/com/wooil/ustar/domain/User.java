@@ -1,20 +1,30 @@
 package com.wooil.ustar.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
-@Entity
-@Table(name = "users")
+@Entity(name = "users")
+@Table(name = "users", schema = "study")
 @Getter
-public class User {
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class User implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "user_name", nullable = false)
+    private String userName;
 
     @Column(name = "email")
     private String email;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
+
