@@ -93,7 +93,7 @@ public class UserServiceTest {
          * It checks if an interaction occurred during the test.
          * */
         verify(userRepository).save(any(User.class));
-        verify(passwordEncoder).encode(signUpRequestDto.getPassword());
+        verify(passwordEncoder).encode(signUpRequestDto.getUserPassword());
     }
 
     @Test
