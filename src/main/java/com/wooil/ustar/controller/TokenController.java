@@ -2,6 +2,8 @@ package com.wooil.ustar.controller;
 
 import com.wooil.ustar.dto.Token.AccessTokenResponse;
 import com.wooil.ustar.dto.Token.RefreshTokenRequestDto;
+import com.wooil.ustar.dto.response.APIResponse;
+import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,11 @@ public class TokenController {
         try {
             String newAccessToken = tokenService.refreshAccessToken(refreshTokenRequestDto.getRefreshToken());
             return ResponseEntity.ok(new AccessTokenResponse(newAccessToken));
+
+        } catch (CustomException e) {
+            APIResponse<Void> resp = new APIResponse<>(true, e.getErrorCode(),
+                e.getMessage());
+            return ResponseEntity.ok(resp);
         }catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

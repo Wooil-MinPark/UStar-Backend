@@ -42,7 +42,7 @@ public class CategoryController {
             APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class CategoryController {
             APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(true, categories);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage(), Collections.emptySet());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public class CategoryController {
             APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class CategoryController {
             APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -126,7 +126,7 @@ public class CategoryController {
             APIResponse<Void> resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Void> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<Void> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {

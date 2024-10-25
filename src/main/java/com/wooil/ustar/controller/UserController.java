@@ -48,7 +48,7 @@ public class UserController {
             APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
@@ -69,7 +69,7 @@ public class UserController {
             APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Boolean> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
@@ -91,7 +91,7 @@ public class UserController {
             APIResponse<String> resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<String> resp = new APIResponse<>(false, e.getErrorCode(), e.getMessage());
+            APIResponse<String> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
@@ -109,7 +109,7 @@ public class UserController {
             APIResponse<LoginResponseDto> resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<LoginResponseDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -130,7 +130,7 @@ public class UserController {
             APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, resDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<UpdateUserResDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -149,7 +149,7 @@ public class UserController {
             APIResponse<GetUserDto> resp = new APIResponse<>(true, user);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<GetUserDto> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<GetUserDto> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -168,7 +168,7 @@ public class UserController {
             APIResponse<Void> resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Void> resp = new APIResponse<>(false, e.getErrorCode(),
+            APIResponse<Void> resp = new APIResponse<>(true, e.getErrorCode(),
                 e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
