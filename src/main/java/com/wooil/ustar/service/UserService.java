@@ -35,17 +35,17 @@ public class UserService {
     // 아이디,이메일이 unique=true여서 이미 있는지 검사
     public User signUpUser(@NotNull SignUpRequestDto signUpRequestDto) {
         try {
-            if (userRepository.existsByUserName(signUpRequestDto.getName())) {
+            if (userRepository.existsByUserName(signUpRequestDto.getUserEmail())) {
                 throw new CustomException(ErrorCode.USER_001);
             }
-            if (userRepository.existsByUserEmail(signUpRequestDto.getEmail())) {
+            if (userRepository.existsByUserEmail(signUpRequestDto.getUserEmail())) {
                 throw new CustomException(ErrorCode.USER_002);
             }
             // 비밀번호 암호화 구현 예정
             User user = User.builder()
-                .userName(signUpRequestDto.getName())
-                .userEmail(signUpRequestDto.getEmail())
-                .userPassword(passwordEncoder.encode(signUpRequestDto.getPassword()))
+                .userName(signUpRequestDto.getUserEmail())
+                .userEmail(signUpRequestDto.getUserEmail())
+                .userPassword(passwordEncoder.encode(signUpRequestDto.getUserPassword()))
                 .build();
 
             return userRepository.save(user);
