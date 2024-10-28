@@ -45,7 +45,13 @@ public class UserController {
         @RequestBody UserNameCheckRequestDto request) {
         try {
             boolean isDuplicated = userService.isUserNameDuplicated(request.getUserName());
-            APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
+            APIResponse<Boolean> resp;
+            if (isDuplicated) {
+                resp = new APIResponse<>(true, ErrorCode.USER_001,
+                    ErrorCode.USER_001.getMessage(), true);
+            } else {
+                resp = new APIResponse<>(true, false);
+            }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
@@ -66,7 +72,13 @@ public class UserController {
         @RequestBody UserEmailCheckRequestDto request) {
         try {
             boolean isDuplicated = userService.isUserEmailDuplicated(request.getUserEmail());
-            APIResponse<Boolean> resp = new APIResponse<>(true, isDuplicated);
+            APIResponse<Boolean> resp;
+            if (isDuplicated) {
+                resp = new APIResponse<>(true, ErrorCode.USER_002,
+                    ErrorCode.USER_002.getMessage(), true);
+            } else {
+                resp = new APIResponse<>(true, false);
+            }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
