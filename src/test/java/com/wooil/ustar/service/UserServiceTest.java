@@ -1,18 +1,25 @@
 package com.wooil.ustar.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
+import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
+import com.wooil.ustar.dto.user.GetUserDto;
+import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
@@ -43,6 +50,7 @@ public class UserServiceTest {
     private SignUpRequestDto signUpRequestDto;
     private LoginRequestDto loginRequestDto;
     private User user;
+    private CustomUserDetails userDetails;
 
     @BeforeEach
     void setUp() {
@@ -50,14 +58,57 @@ public class UserServiceTest {
         final String email = "test@test.com";
         final String password = "password";
         final String encodedPassword = "encodedPassword";
+        final Long uid = 1L;
 
         signUpRequestDto = new SignUpRequestDto(name, email, password);
         loginRequestDto = new LoginRequestDto(email, password);
         user = User.builder()
+            .userUid(uid)
             .userName(name)
             .userEmail(email)
             .userPassword(encodedPassword)
             .build();
+        userDetails = new CustomUserDetails(user);
+    }
+
+    @Test
+    void isUserNameDuplicated_True() {
+        when(userRepository.existsByUserName(anyString())).thenReturn(true);
+
+        boolean result = userService.isUserNameDuplicated("testName");
+
+        assertTrue(result);
+        verify(userRepository).existsByUserName("testName");
+    }
+
+    @Test
+    void isUserNameDuplicated_False() {
+        when(userRepository.existsByUserName(anyString())).thenReturn(false);
+
+        boolean result = userService.isUserNameDuplicated("testName");
+
+        assertFalse(result);
+        verify(userRepository).existsByUserName("testName");
+    }
+
+    @Test
+    void isUserEmailDuplicated_True() {
+        when(userRepository.existsByUserEmail(anyString())).thenReturn(true);
+
+        boolean result = userService.isUserEmailDuplicated("test@test.com");
+
+        assertTrue(result);
+        verify(userRepository).existsByUserEmail("test@test.com");
+    }
+
+    @Test
+    void isUserEmailDuplicated_False() {
+        when(userRepository.existsByUserEmail(anyString())).thenReturn(false);
+
+        boolean result = userService.isUserEmailDuplicated("test@test.com");
+
+        assertFalse(result);
+        verify(userRepository).existsByUserEmail("test@test.com");
     }
 
     @Test
@@ -150,6 +201,83 @@ public class UserServiceTest {
 
         CustomException exception = assertThrows(CustomException.class,
             () -> userService.login(loginRequestDto));
+
+        assertEquals(ErrorCode.USER_004, exception.getErrorCode());
+    }
+
+    @Test
+    void updateUser_Success() {
+        UpdateUserRequestDto updateDto = new UpdateUserRequestDto("newTestName");
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User result = userService.updateUser(userDetails, updateDto);
+
+        assertNotNull(result);
+        assertEquals("newTestName", result.getUserName());
+        verify(userRepository).findByUserEmail(result.getUserEmail());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_DuplicateUserName() {
+        UpdateUserRequestDto updateDto = new UpdateUserRequestDto("existingName");
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.existsByUserName(anyString())).thenReturn(true);
+
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.updateUser(userDetails, updateDto));
+
+        assertEquals(ErrorCode.USER_001, exception.getErrorCode());
+    }
+
+    @Test
+    void updateUser_UserNotFound() {
+        UpdateUserRequestDto updateDto = new UpdateUserRequestDto("newTestName");
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
+
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.updateUser(userDetails, updateDto));
+
+        assertEquals(ErrorCode.USER_004, exception.getErrorCode());
+    }
+
+    @Test
+    void getUser_Success() {
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
+
+        GetUserDto result = userService.getUser(userDetails);
+
+        assertNotNull(result);
+        assertEquals("testName", result.getUserName());
+        assertEquals("test@test.com", result.getUserEmail());
+    }
+
+    @Test
+    void getUser_UserNotFound() {
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
+
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.getUser(userDetails));
+
+        assertEquals(ErrorCode.USER_004, exception.getErrorCode());
+    }
+
+    @Test
+    void deleteUser_Success() {
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
+        doNothing().when(userRepository).delete(any(User.class));
+
+        assertDoesNotThrow(() -> userService.deleteUser(userDetails));
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void deleteUser_UserNotFound() {
+        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
+
+        CustomException exception = assertThrows(CustomException.class,
+            () -> userService.deleteUser(userDetails));
 
         assertEquals(ErrorCode.USER_004, exception.getErrorCode());
     }
