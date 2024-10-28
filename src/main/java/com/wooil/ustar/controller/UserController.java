@@ -43,9 +43,10 @@ public class UserController {
     @PostMapping("/signup/userNameDup")
     public ResponseEntity<APIResponse<Boolean>> checkUserNameDup(
         @RequestBody UserNameCheckRequestDto request) {
+        APIResponse<Boolean> resp;
         try {
             boolean isDuplicated = userService.isUserNameDuplicated(request.getUserName());
-            APIResponse<Boolean> resp;
+
             if (isDuplicated) {
                 resp = new APIResponse<>(true, ErrorCode.USER_001,
                     ErrorCode.USER_001.getMessage(), true);
@@ -54,11 +55,12 @@ public class UserController {
             }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -70,9 +72,10 @@ public class UserController {
     @PostMapping("/signup/userEmailDup")
     public ResponseEntity<APIResponse<Boolean>> checkUserEmailDup(
         @RequestBody UserEmailCheckRequestDto request) {
+        APIResponse<Boolean> resp;
         try {
             boolean isDuplicated = userService.isUserEmailDuplicated(request.getUserEmail());
-            APIResponse<Boolean> resp;
+
             if (isDuplicated) {
                 resp = new APIResponse<>(true, ErrorCode.USER_002,
                     ErrorCode.USER_002.getMessage(), true);
@@ -81,11 +84,12 @@ public class UserController {
             }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Boolean> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during check userName duplicated", e);
-            APIResponse<Boolean> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -98,16 +102,18 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<APIResponse<String>> signUpUser(
         @Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        APIResponse<String> resp;
         try {
             User user = userService.signUpUser(signUpRequestDto);
-            APIResponse<String> resp = new APIResponse<>(true);
+            resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<String> resp = new APIResponse<>(true, e.getErrorCode(), e.getMessage());
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<String> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -116,17 +122,18 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<APIResponse<LoginResponseDto>> login(
         @RequestBody LoginRequestDto loginRequestDto) {
+        APIResponse<LoginResponseDto> resp;
         try {
             LoginResponseDto responseDto = userService.login(loginRequestDto);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(true, responseDto);
+           resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-            APIResponse<LoginResponseDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+           resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -136,18 +143,19 @@ public class UserController {
     public ResponseEntity<APIResponse<UpdateUserResDto>> updateUser(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody UpdateUserRequestDto request) {
+        APIResponse<UpdateUserResDto> resp;
         try {
             User user = userService.updateUser(userDetails, request);
             UpdateUserResDto resDto = UserMapper.user2UpdateUserResDto(user);
-            APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, resDto);
+            resp = new APIResponse<>(true, resDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<UpdateUserResDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while fetching user information", e);
-            APIResponse<UpdateUserResDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -156,17 +164,18 @@ public class UserController {
     @GetMapping("/whoami")
     public ResponseEntity<APIResponse<GetUserDto>> getUser(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        APIResponse<GetUserDto> resp;
         try {
             GetUserDto user = userService.getUser(userDetails);
-            APIResponse<GetUserDto> resp = new APIResponse<>(true, user);
+            resp = new APIResponse<>(true, user);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<GetUserDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while fetching user information", e);
-            APIResponse<GetUserDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -175,17 +184,18 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<APIResponse<Void>> deleteUser(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
+        APIResponse<Void> resp;
         try {
             userService.deleteUser(userDetails);
-            APIResponse<Void> resp = new APIResponse<>(true);
+            resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Void> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while fetching user information", e);
-            APIResponse<Void> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }

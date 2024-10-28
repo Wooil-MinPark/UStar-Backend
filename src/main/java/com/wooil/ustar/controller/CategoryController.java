@@ -37,17 +37,18 @@ public class CategoryController {
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody CreateCategoryRequestDto request
     ) {
+        APIResponse<CategoryResDto> resp;
         try {
             CategoryResDto category = categoryService.createCategory(userDetails, request);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
+            resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while create category", e);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -57,18 +58,19 @@ public class CategoryController {
     public ResponseEntity<APIResponse<Set<CategoryResDto>>> getAllCategories(
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        APIResponse<Set<CategoryResDto>> resp;
         try {
             Set<CategoryResDto> categories = categoryService.getAllCategoriesByUser(userDetails);
 
-            APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(true, categories);
+            resp = new APIResponse<>(true, categories);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage(), Collections.emptySet());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while get all categories", e);
-            APIResponse<Set<CategoryResDto>> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage(), Collections.emptySet());
             return ResponseEntity.ok(resp);
         }
@@ -79,17 +81,18 @@ public class CategoryController {
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long categoryUid
     ) {
+        APIResponse<CategoryResDto> resp;
         try {
             CategoryResDto category = categoryService.getCategoryById(userDetails, categoryUid);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
+            resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while get category", e);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -100,17 +103,18 @@ public class CategoryController {
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody UpdateCategoryRequestDto request
     ){
+        APIResponse<CategoryResDto> resp;
         try {
             CategoryResDto category = categoryService.updateCategory(userDetails, request);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, category);
+            resp = new APIResponse<>(true, category);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<CategoryResDto> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while update category", e);
-            APIResponse<CategoryResDto> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -121,17 +125,18 @@ public class CategoryController {
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody DeleteCategoryRequestDto request
     ){
+        APIResponse<Void> resp;
         try {
             categoryService.deleteCategory(userDetails, request);
-            APIResponse<Void> resp = new APIResponse<>(true);
+            resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            APIResponse<Void> resp = new APIResponse<>(true, e.getErrorCode(),
-                e.getMessage());
+             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error while update category", e);
-            APIResponse<Void> resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
