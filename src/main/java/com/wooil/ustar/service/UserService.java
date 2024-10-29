@@ -75,7 +75,7 @@ public class UserService {
             }
 
             // unauthorized error
-            if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getUserPassword())) {
+            if (!passwordEncoder.matches(loginRequestDto.getUserPassword(), user.getUserPassword())) {
                 //  추후에 개선
                 throw new CustomException(ErrorCode.USER_003, ErrorCode.USER_003.getMessage());
             }

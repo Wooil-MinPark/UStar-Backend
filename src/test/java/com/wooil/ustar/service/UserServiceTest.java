@@ -180,7 +180,7 @@ public class UserServiceTest {
         assertEquals("refresh_token", res.refreshToken());
 
         verify(userRepository).findByUserEmail(loginRequestDto.getUserEmail());
-        verify(passwordEncoder).matches(loginRequestDto.getPassword(), user.getUserPassword());
+        verify(passwordEncoder).matches(loginRequestDto.getUserPassword(), user.getUserPassword());
         verify(jwtUtil).generateAccessToken(user.getUserEmail());
         verify(jwtUtil).generateRefreshToken(user.getUserEmail());
     }
