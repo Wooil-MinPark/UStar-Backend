@@ -15,9 +15,13 @@ import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.mapper.UserMapper;
 import com.wooil.ustar.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +40,8 @@ public class UserController {
 
     private final UserService userService;
 
+    @Value("${jwt.refresh-token-validity}")
+    private long refreshTokenValidity;
 
     /*
      * [GET] check username duplicated
@@ -55,7 +61,8 @@ public class UserController {
             }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -84,7 +91,8 @@ public class UserController {
             }
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -108,7 +116,8 @@ public class UserController {
             resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -121,19 +130,36 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<APIResponse<LoginResponseDto>> login(
-        @RequestBody LoginRequestDto loginRequestDto) {
+        @RequestBody LoginRequestDto loginRequestDto,
+        HttpServletResponse response
+    ) {
         APIResponse<LoginResponseDto> resp;
         try {
             LoginResponseDto responseDto = userService.login(loginRequestDto);
-           resp = new APIResponse<>(true, responseDto);
+
+            Cookie refreshTokenCookie = new Cookie("refresh_token", responseDto.refreshToken());
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(true);
+            refreshTokenCookie.setPath("/api/auth");
+            refreshTokenCookie.setMaxAge(
+                (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
+
+            response.addCookie(refreshTokenCookie);
+
+            responseDto = LoginResponseDto.builder()
+                .accessToken(responseDto.accessToken())
+                .build();
+
+            resp = new APIResponse<>(true, responseDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             log.error("Unexpected error during user registration", e);
-           resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
                 e.getMessage());
             return ResponseEntity.ok(resp);
         }
@@ -150,7 +176,8 @@ public class UserController {
             resp = new APIResponse<>(true, resDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -170,7 +197,8 @@ public class UserController {
             resp = new APIResponse<>(true, user);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
@@ -190,7 +218,8 @@ public class UserController {
             resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
-             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001 || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
             resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
