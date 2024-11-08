@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -63,6 +64,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Category> categories = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
+
     // Builder 생성자를 재정의한 이유는 created_at와 updated_at가 자동 생성돼야하기 때문.
     @Builder
     public User(Long userUid, String userName, String userEmail, String userPassword) {
@@ -88,7 +92,11 @@ public class User {
         category.setUser(this);
     }
 
-//    public Set<Category> getCategories() {
-//        return Collections.unmodifiableSet(categories);
-//    }
+    public void setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+        if (refreshToken != null) {
+            refreshToken.setUser(this);
+        }
+    }
+
 }
