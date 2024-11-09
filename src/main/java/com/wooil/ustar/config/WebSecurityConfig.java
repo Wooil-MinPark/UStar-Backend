@@ -63,7 +63,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         ));
         configuration.setExposedHeaders(Arrays.asList(
             "Authorization",
-            "Refresh-Token"
+            "Set-Cookie"
         ));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
