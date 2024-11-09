@@ -3,10 +3,13 @@ package com.wooil.ustar.service;
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.domain.RefreshToken;
 import com.wooil.ustar.domain.User;
+import com.wooil.ustar.enums.CookieName;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.RefreshTokenRepository;
 import com.wooil.ustar.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +34,25 @@ public class TokenService {
 
     public String refreshAccessToken(String refreshToken) {
         try {
-            if (jwtUtil.validateToken(refreshToken)) {
-                String userEmail = jwtUtil.getUsernameFromToken(refreshToken);
-                /// 여기 에러코드 추가
-                User user = userRepository.findByUserEmail(userEmail)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-                return jwtUtil.generateAccessToken(userEmail);
+            if (!jwtUtil.validateToken(refreshToken)) {
+                throw new CustomException(ErrorCode.TOKEN_001);
             }
-            throw new CustomException(ErrorCode.TOKEN_001);
+            String userEmail = jwtUtil.getUsernameFromToken(refreshToken);
+
+            User user = userRepository.findByUserEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
+
+            RefreshToken storedRefreshToken = refreshTokenRepository.findByUser(user)
+                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_001));
+
+            if (!storedRefreshToken.isValid() || !storedRefreshToken.getTokenValue()
+                .equals(refreshToken)) {
+                refreshTokenRepository.delete(storedRefreshToken);
+                throw new CustomException(ErrorCode.TOKEN_003);
+            }
+
+            return jwtUtil.generateAccessToken(userEmail);
+
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode());
@@ -95,12 +109,12 @@ public class TokenService {
     // 저장돼있는 refresh token 검증 함수
     public boolean validateStoredRefreshToken(String userEmail, String refreshToken) {
         try {
-        User user = userRepository.findByUserEmail(userEmail)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
+            User user = userRepository.findByUserEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
 
-        return refreshTokenRepository.findByUser(user)
-            .map(token -> token.isValid() && token.getTokenValue().equals(refreshToken))
-            .orElse(false);
+            return refreshTokenRepository.findByUser(user)
+                .map(token -> token.isValid() && token.getTokenValue().equals(refreshToken))
+                .orElse(false);
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode());
@@ -121,5 +135,29 @@ public class TokenService {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
         }
+    }
+
+    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
+        try{
+            Cookie[] cookies = request.getCookies();
+
+            if(cookies == null){
+                throw new CustomException(ErrorCode.TOKEN_004);
+            }
+
+            for(Cookie cookie : cookies){
+                if(CookieName.REFRESH_TOKEN.getName().equals(cookie.getName())){
+                    return cookie.getValue();
+                }
+            }
+            throw new CustomException(ErrorCode.TOKEN_005);
+        }catch (CustomException e) {
+            log.error(e.getMessage());
+            throw new CustomException(e.getErrorCode());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.GLOBAL_001, e.getMessage());
+        }
+
     }
 }
