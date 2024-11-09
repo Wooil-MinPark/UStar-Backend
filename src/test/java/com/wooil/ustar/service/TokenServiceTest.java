@@ -128,7 +128,6 @@ public class TokenServiceTest {
     @Test
     void createRefreshToken_Success() {
         // given
-        when(refreshTokenRepository.findByUser(user)).thenReturn(Optional.empty());
         when(jwtUtil.generateRefreshToken(TEST_EMAIL)).thenReturn(TEST_REFRESH_TOKEN);
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(refreshToken);
 
@@ -140,6 +139,7 @@ public class TokenServiceTest {
         assertEquals(TEST_REFRESH_TOKEN, result.getTokenValue());
         assertEquals(user, result.getUser());
         assertTrue(result.isValid());
+        verify(refreshTokenRepository).deleteByUser(user);
         verify(jwtUtil).generateRefreshToken(TEST_EMAIL);
         verify(refreshTokenRepository).save(any(RefreshToken.class));
     }
@@ -147,15 +147,9 @@ public class TokenServiceTest {
     @Test
     void createRefreshToken_DeleteExisting(){
         // given
-        RefreshToken oldToken = RefreshToken.builder()
-                .user(user)
-                .tokenValue("old_refresh_token")
-                .tokenExpiresAt(LocalDateTime.now().plusDays(7))
-                .build();
-
-        when(refreshTokenRepository.findByUser(user)).thenReturn(Optional.of(oldToken));
         when(jwtUtil.generateRefreshToken(TEST_EMAIL)).thenReturn(TEST_REFRESH_TOKEN);
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(refreshToken);
+
 
         // when
         RefreshToken result = tokenService.createRefreshToken(user);
@@ -165,8 +159,8 @@ public class TokenServiceTest {
         assertEquals(TEST_REFRESH_TOKEN, result.getTokenValue());
         assertEquals(user, result.getUser());
         assertTrue(result.isValid());
+        verify(refreshTokenRepository).deleteByUser(user);
         verify(jwtUtil).generateRefreshToken(TEST_EMAIL);
-        verify(refreshTokenRepository).delete(oldToken);
         verify(refreshTokenRepository).save(any(RefreshToken.class));
     }
 
@@ -207,14 +201,13 @@ public class TokenServiceTest {
     void removeRefreshToken_Success(){
         // given
         when(userRepository.findByUserEmail(TEST_EMAIL)).thenReturn(Optional.of(user));
-        when(refreshTokenRepository.findByUser(user)).thenReturn(Optional.of(refreshToken));
 
         // when
         tokenService.removeRefreshToken(TEST_EMAIL);
 
         // then
-        verify(refreshTokenRepository).delete(refreshToken);
-        assertNull(user.getRefreshToken());
+        verify(refreshTokenRepository).deleteByUser(user);
+        verifyNoMoreInteractions(refreshTokenRepository);
     }
 
     @Test
