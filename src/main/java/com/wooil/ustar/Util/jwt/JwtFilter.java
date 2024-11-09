@@ -11,6 +11,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,13 +34,15 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         try {
-            final String authorizationHeader = request.getHeader("Authorization");
-
             String userEmail = null;
             String jwt = null;
 
+            final String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 jwt = authorizationHeader.substring(7);
+            }
+
+            if (jwt != null) {
                 try {
                     userEmail = jwtUtil.getUsernameFromToken(jwt);
                 } catch (ExpiredJwtException e) {
@@ -70,7 +73,6 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             handleCustomException(response, e);
         }
-
     }
 
     private void handleCustomException(HttpServletResponse response, CustomException e)
