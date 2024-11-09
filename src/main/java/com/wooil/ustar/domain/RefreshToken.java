@@ -1,6 +1,8 @@
 package com.wooil.ustar.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wooil.ustar.enums.ErrorCode;
+import com.wooil.ustar.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -28,7 +30,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -62,18 +63,21 @@ public class RefreshToken {
         return LocalDateTime.now().isBefore(tokenExpiresAt);
     }
 
-    @Builder
-    public RefreshToken(Long tokenUid, User user, String tokenValue, LocalDateTime tokenExpiresAt) {
-        this.tokenUid = tokenUid;
-        this.tokenValue = tokenValue;
-        this.tokenExpiresAt = tokenExpiresAt;
-        setUser(user);  // 양방향 관계 설정
+    @Builder(builderClassName = "RefreshTokenBuilder")
+    public static RefreshToken createRefreshToken(User user, String tokenValue, LocalDateTime tokenExpiresAt) {
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.tokenValue = tokenValue;
+        refreshToken.tokenExpiresAt = tokenExpiresAt;
+        refreshToken.setUser(user);
+        return refreshToken;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-        if (user != null && user.getRefreshToken() != this) {
-            user.setRefreshToken(this);
+    private void setUser(User user) {
+        if(user == null){
+            throw new CustomException(ErrorCode.USER_004);
         }
+        this.user = user;
+        user.setRefreshToken(this);
+
     }
 }

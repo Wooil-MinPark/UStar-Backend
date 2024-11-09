@@ -92,11 +92,8 @@ public class User {
         category.setUser(this);
     }
 
-    public void setRefreshToken(RefreshToken refreshToken) {
+    void setRefreshToken(RefreshToken refreshToken) {
         this.refreshToken = refreshToken;
-        if (refreshToken != null) {
-            refreshToken.setUser(this);
-        }
     }
 
 }
