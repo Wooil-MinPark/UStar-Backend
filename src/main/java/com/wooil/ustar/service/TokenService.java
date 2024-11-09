@@ -65,9 +65,8 @@ public class TokenService {
     // refresh token 생성 함수
     public RefreshToken createRefreshToken(User user) {
         try {
-            // 기존 리프레시 토큰 있다면 제거
-            refreshTokenRepository.findByUser(user)
-                .ifPresent(refreshTokenRepository::delete);
+            // 기존 토큰 제거
+            refreshTokenRepository.deleteByUser(user);
 
             // 새 refresh token 생성
             String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
@@ -89,14 +88,14 @@ public class TokenService {
         }
     }
 
+
     // refresh token 제거함수
     public void removeRefreshToken(String userEmail) {
         try {
             User user = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
 
-            refreshTokenRepository.findByUser(user)
-                .ifPresent(refreshTokenRepository::delete);
+            refreshTokenRepository.deleteByUser(user);
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode());
