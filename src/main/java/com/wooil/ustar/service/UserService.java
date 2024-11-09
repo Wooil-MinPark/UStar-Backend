@@ -6,6 +6,7 @@ import com.wooil.ustar.domain.RefreshToken;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
+import com.wooil.ustar.dto.Login.LoginTokensDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserRequestDto;
@@ -61,7 +62,7 @@ public class UserService {
         }
     }
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public LoginTokensDto login(LoginRequestDto loginRequestDto) {
         try {
             User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail())
                 .orElseThrow(
@@ -79,7 +80,7 @@ public class UserService {
 //            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
-            return LoginResponseDto.builder()
+            return LoginTokensDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getTokenValue())
                 .build();
