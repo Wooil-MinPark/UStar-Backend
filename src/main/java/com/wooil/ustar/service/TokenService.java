@@ -127,7 +127,7 @@ public class TokenService {
     public RefreshToken findByUser(User user) {
         try {
             return refreshTokenRepository.findByUser(user)
-                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_001));
+                .orElseThrow(() -> new CustomException(ErrorCode.TOKEN_005));
         } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode());
