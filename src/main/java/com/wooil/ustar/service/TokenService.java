@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +65,7 @@ public class TokenService {
     }
 
     // refresh token 생성 함수
+    @Transactional
     public RefreshToken createRefreshToken(User user) {
         try {
             // 기존 토큰 제거
@@ -137,20 +140,20 @@ public class TokenService {
     }
 
     public String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        try{
+        try {
             Cookie[] cookies = request.getCookies();
 
-            if(cookies == null){
+            if (cookies == null) {
                 throw new CustomException(ErrorCode.TOKEN_004);
             }
 
-            for(Cookie cookie : cookies){
-                if(CookieName.REFRESH_TOKEN.getName().equals(cookie.getName())){
+            for (Cookie cookie : cookies) {
+                if (CookieName.REFRESH_TOKEN.getName().equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
             throw new CustomException(ErrorCode.TOKEN_005);
-        }catch (CustomException e) {
+        } catch (CustomException e) {
             log.error(e.getMessage());
             throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
