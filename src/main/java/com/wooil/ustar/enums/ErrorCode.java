@@ -31,6 +31,15 @@ public enum ErrorCode {
     // JWT token expired
     TOKEN_002("JWT token was expired"),
 
+    // JWT token authentication failed
+    TOKEN_003("Authentication failed"),
+
+    // Cookie not found
+    TOKEN_004("Cookie not found"),
+
+    /// refresh token not found in cookie
+    TOKEN_005("Refresh token not found."),
+
     // Category not found
     CATEGORY_001("category not found"),
 
