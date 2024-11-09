@@ -25,6 +25,8 @@ import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -175,11 +177,12 @@ public class UserServiceTest {
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtUtil.generateAccessToken(anyString())).thenReturn("access_token");
-//        when(jwtUtil.generateRefreshToken(anyString())).thenReturn("refresh_token");
-//        when(jwtUtil.validateToken(anyString())).thenReturn(true);
 
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setTokenValue("refresh_token");
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .tokenValue("refresh_token")
+                .tokenExpiresAt(LocalDateTime.now().plusDays(7)).build();
+
         when(tokenService.createRefreshToken(any(User.class))).thenReturn(refreshToken);
 
         LoginTokensDto res = userService.login(loginRequestDto);
