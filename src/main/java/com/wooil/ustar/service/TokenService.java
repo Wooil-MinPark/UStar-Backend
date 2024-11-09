@@ -37,7 +37,7 @@ public class TokenService {
             if (!jwtUtil.validateToken(refreshToken)) {
                 throw new CustomException(ErrorCode.TOKEN_001);
             }
-            String userEmail = jwtUtil.getUsernameFromToken(refreshToken);
+            String userEmail = jwtUtil.getUserEmailFromToken(refreshToken);
 
             User user = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_004));
