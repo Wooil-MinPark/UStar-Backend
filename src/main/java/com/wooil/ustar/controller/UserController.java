@@ -4,6 +4,7 @@ import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
+import com.wooil.ustar.dto.Login.LoginTokensDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.response.APIResponse;
 import com.wooil.ustar.dto.user.GetUserDto;
@@ -11,9 +12,11 @@ import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.dto.user.UpdateUserResDto;
 import com.wooil.ustar.dto.user.UserEmailCheckRequestDto;
 import com.wooil.ustar.dto.user.UserNameCheckRequestDto;
+import com.wooil.ustar.enums.CookieName;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.mapper.UserMapper;
+import com.wooil.ustar.service.TokenService;
 import com.wooil.ustar.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
     @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidity;
@@ -135,9 +139,9 @@ public class UserController {
     ) {
         APIResponse<LoginResponseDto> resp;
         try {
-            LoginResponseDto responseDto = userService.login(loginRequestDto);
+            LoginTokensDto responseDto = userService.login(loginRequestDto);
 
-            Cookie refreshTokenCookie = new Cookie("refresh_token", responseDto.refreshToken());
+            Cookie refreshTokenCookie = new Cookie(CookieName.REFRESH_TOKEN.getName(), responseDto.refreshToken());
             refreshTokenCookie.setHttpOnly(true);
             refreshTokenCookie.setSecure(true);
             refreshTokenCookie.setPath("/api/auth");
@@ -146,11 +150,11 @@ public class UserController {
 
             response.addCookie(refreshTokenCookie);
 
-            responseDto = LoginResponseDto.builder()
+            LoginResponseDto respDto = LoginResponseDto.builder()
                 .accessToken(responseDto.accessToken())
                 .build();
 
-            resp = new APIResponse<>(true, responseDto);
+            resp = new APIResponse<>(true, respDto);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
             final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
@@ -215,6 +219,35 @@ public class UserController {
         APIResponse<Void> resp;
         try {
             userService.deleteUser(userDetails);
+            resp = new APIResponse<>(true);
+            return ResponseEntity.ok(resp);
+        } catch (CustomException e) {
+            final boolean isGlobalError = e.getErrorCode() == ErrorCode.GLOBAL_001
+                || e.getErrorCode() == ErrorCode.GLOBAL_002;
+            resp = new APIResponse<>(!isGlobalError, e.getErrorCode(), e.getMessage());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            log.error("Unexpected error while fetching user information", e);
+            resp = new APIResponse<>(false, ErrorCode.GLOBAL_002,
+                e.getMessage());
+            return ResponseEntity.ok(resp);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<APIResponse<Void>> logout(
+        HttpServletResponse response,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        APIResponse<Void> resp;
+        try {
+            Cookie cookie = new Cookie(CookieName.REFRESH_TOKEN.getName(), null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/api/auth");
+            response.addCookie(cookie);
+
+            tokenService.removeRefreshToken(userDetails.getUsername());
+
             resp = new APIResponse<>(true);
             return ResponseEntity.ok(resp);
         } catch (CustomException e) {
