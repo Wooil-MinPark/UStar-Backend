@@ -33,15 +33,17 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         try {
-            final String authorizationHeader = request.getHeader("Authorization");
-
             String userEmail = null;
             String jwt = null;
 
+            final String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 jwt = authorizationHeader.substring(7);
+            }
+
+            if (jwt != null) {
                 try {
-                    userEmail = jwtUtil.getUsernameFromToken(jwt);
+                    userEmail = jwtUtil.getUserEmailFromToken(jwt);
                 } catch (ExpiredJwtException e) {
                     throw new CustomException(ErrorCode.TOKEN_002);
                 } catch (SignatureException | MalformedJwtException e) {
@@ -70,7 +72,6 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
             handleCustomException(response, e);
         }
-
     }
 
     private void handleCustomException(HttpServletResponse response, CustomException e)

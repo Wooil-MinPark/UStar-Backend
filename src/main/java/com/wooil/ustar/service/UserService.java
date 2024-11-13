@@ -2,9 +2,11 @@ package com.wooil.ustar.service;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
+import com.wooil.ustar.domain.RefreshToken;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
+import com.wooil.ustar.dto.Login.LoginTokensDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserRequestDto;
@@ -28,6 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
     private final JwtUtil jwtUtil;
 
 
@@ -59,34 +62,27 @@ public class UserService {
         }
     }
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public LoginTokensDto login(LoginRequestDto loginRequestDto) {
         try {
             User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail())
                 .orElseThrow(
                     () -> new CustomException(ErrorCode.USER_004));
 
-            // User Not found error
-            if (user == null) {
-                //  추후에 개선
-                return LoginResponseDto.builder()
-                    .accessToken("")
-                    .refreshToken("")
-                    .build();
-            }
-
             // unauthorized error
-            if (!passwordEncoder.matches(loginRequestDto.getUserPassword(), user.getUserPassword())) {
+            if (!passwordEncoder.matches(loginRequestDto.getUserPassword(),
+                user.getUserPassword())) {
                 //  추후에 개선
                 throw new CustomException(ErrorCode.USER_003, ErrorCode.USER_003.getMessage());
             }
 
             // create jwt token when login success
             String accessToken = jwtUtil.generateAccessToken(user.getUserEmail());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
+//            String refreshToken = jwtUtil.generateRefreshToken(user.getUserEmail());
+            RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
-            return LoginResponseDto.builder()
+            return LoginTokensDto.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .refreshToken(refreshToken.getTokenValue())
                 .build();
 
         } catch (CustomException e) {

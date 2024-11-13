@@ -5,7 +5,6 @@ import com.wooil.ustar.exception.CustomException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
@@ -77,7 +76,7 @@ public class JwtUtil {
         }
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUserEmailFromToken(String token) {
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()

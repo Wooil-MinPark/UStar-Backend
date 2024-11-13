@@ -14,15 +14,19 @@ import static org.mockito.Mockito.when;
 
 import com.wooil.ustar.Util.jwt.JwtUtil;
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
+import com.wooil.ustar.domain.RefreshToken;
 import com.wooil.ustar.domain.User;
 import com.wooil.ustar.dto.Login.LoginRequestDto;
 import com.wooil.ustar.dto.Login.LoginResponseDto;
+import com.wooil.ustar.dto.Login.LoginTokensDto;
 import com.wooil.ustar.dto.SignUpRequestDto;
 import com.wooil.ustar.dto.user.GetUserDto;
 import com.wooil.ustar.dto.user.UpdateUserRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.repository.UserRepository;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +44,9 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private TokenService tokenService;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -170,10 +177,15 @@ public class UserServiceTest {
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtUtil.generateAccessToken(anyString())).thenReturn("access_token");
-        when(jwtUtil.generateRefreshToken(anyString())).thenReturn("refresh_token");
-//        when(jwtUtil.validateToken(anyString())).thenReturn(true);
 
-        LoginResponseDto res = userService.login(loginRequestDto);
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .tokenValue("refresh_token")
+                .tokenExpiresAt(LocalDateTime.now().plusDays(7)).build();
+
+        when(tokenService.createRefreshToken(any(User.class))).thenReturn(refreshToken);
+
+        LoginTokensDto res = userService.login(loginRequestDto);
 
         assertNotNull(res);
         assertEquals("access_token", res.accessToken());
@@ -182,7 +194,7 @@ public class UserServiceTest {
         verify(userRepository).findByUserEmail(loginRequestDto.getUserEmail());
         verify(passwordEncoder).matches(loginRequestDto.getUserPassword(), user.getUserPassword());
         verify(jwtUtil).generateAccessToken(user.getUserEmail());
-        verify(jwtUtil).generateRefreshToken(user.getUserEmail());
+        verify(tokenService).createRefreshToken(user);
     }
 
     @Test
