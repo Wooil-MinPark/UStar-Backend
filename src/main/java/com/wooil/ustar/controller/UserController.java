@@ -141,12 +141,15 @@ public class UserController {
         try {
             LoginTokensDto responseDto = userService.login(loginRequestDto);
 
-            Cookie refreshTokenCookie = new Cookie(CookieName.REFRESH_TOKEN.getName(), responseDto.refreshToken());
-            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setSecure(true);
-            refreshTokenCookie.setPath("/api/auth");
-            refreshTokenCookie.setMaxAge(
-                (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
+            Cookie refreshTokenCookie = new Cookie(CookieName.REFRESH_TOKEN.getName(),
+                responseDto.refreshToken());
+                refreshTokenCookie.setHttpOnly(true);
+//                refreshTokenCookie.setSecure(true);
+                refreshTokenCookie.setPath("/");
+                refreshTokenCookie.setAttribute("SameSite", "Lax");
+                refreshTokenCookie.setMaxAge(
+                    (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
+//                refreshTokenCookie.setDomain("localhost");
 
             response.addCookie(refreshTokenCookie);
 
