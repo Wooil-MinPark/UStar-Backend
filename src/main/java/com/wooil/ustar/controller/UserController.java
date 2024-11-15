@@ -144,12 +144,12 @@ public class UserController {
             Cookie refreshTokenCookie = new Cookie(CookieName.REFRESH_TOKEN.getName(),
                 responseDto.refreshToken());
                 refreshTokenCookie.setHttpOnly(true);
-//                refreshTokenCookie.setSecure(true);
+                refreshTokenCookie.setSecure(false);
                 refreshTokenCookie.setPath("/");
                 refreshTokenCookie.setAttribute("SameSite", "Lax");
                 refreshTokenCookie.setMaxAge(
                     (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
-//                refreshTokenCookie.setDomain("localhost");
+                refreshTokenCookie.setDomain("localhost");
 
             response.addCookie(refreshTokenCookie);
 
