@@ -43,9 +43,16 @@ public enum ErrorCode {
     // Category not found
     CATEGORY_001("category not found"),
 
-    // permission denied category
-    CATEGORY_002("category permission denied"),
+    // category: permission denied
+    CATEGORY_002("permission denied this category"),
+
+    // Task not found
+    TASK_001("Task not found"),
+
+    // Task: permission denied
+    TASK_002("permission denied this task")
     ;
+
 
     private String message;
 }
