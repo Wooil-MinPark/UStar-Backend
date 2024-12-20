@@ -143,13 +143,13 @@ public class UserController {
 
             Cookie refreshTokenCookie = new Cookie(CookieName.REFRESH_TOKEN.getName(),
                 responseDto.refreshToken());
-                refreshTokenCookie.setHttpOnly(true);
-                refreshTokenCookie.setSecure(false);
-                refreshTokenCookie.setPath("/");
-                refreshTokenCookie.setAttribute("SameSite", "Lax");
-                refreshTokenCookie.setMaxAge(
-                    (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
-                refreshTokenCookie.setDomain("localhost");
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(false);
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setAttribute("SameSite", "Lax");
+            refreshTokenCookie.setMaxAge(
+                (int) TimeUnit.MILLISECONDS.toSeconds(refreshTokenValidity));
+            refreshTokenCookie.setDomain("localhost");
 
             response.addCookie(refreshTokenCookie);
 
@@ -244,9 +244,15 @@ public class UserController {
     ) {
         APIResponse<Void> resp;
         try {
+            // 1. Delete refresh token from cookie
+
             Cookie cookie = new Cookie(CookieName.REFRESH_TOKEN.getName(), null);
-            cookie.setMaxAge(0);
-            cookie.setPath("/api/auth");
+            cookie.setMaxAge(0); // 바로 만료
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setDomain("localhost");
+            cookie.setAttribute("SameSite", "Lax");
             response.addCookie(cookie);
 
             tokenService.removeRefreshToken(userDetails.getUsername());
