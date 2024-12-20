@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateTaskRequestDto {
-    private Long taskUid;
-    private String taskMessage;
-    private Integer taskTimeDuration;
-    private LocalDate taskTodayDate;
+public class CreateStarRequestDto {
+
+    private String starMessage;
+    private Integer starTimeDuration;
+    private LocalDate starTodayDate;
     private Long categoryUid;
 }

@@ -46,22 +46,22 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<Task> tasks = new HashSet<>();
+    private Set<Star> stars = new HashSet<>();
 
     // 연관관계 편의 메서드
-    public void addTask(Task task) {
-        if (task == null) {
-            throw new IllegalArgumentException("task cannot be null in Category.addTask");
+    public void addStar(Star star) {
+        if (star == null) {
+            throw new IllegalArgumentException("star cannot be null in Category.addTask");
         }
-        tasks.add(task);
-        task.setCategory(this);
+        stars.add(star);
+        star.setCategory(this);
     }
 
-    public void removeTask(Task task) {
-        if (task == null) {
-            throw new IllegalArgumentException("task cannot be null in Category.removeTask");
+    public void removeStar(Star star) {
+        if (star == null) {
+            throw new IllegalArgumentException("star cannot be null in Category.removeTask");
         }
-        tasks.remove(task);
-        task.setCategory(null);
+        stars.remove(star);
+        star.setCategory(null);
     }
 }

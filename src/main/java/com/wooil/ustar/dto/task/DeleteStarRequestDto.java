@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteTaskRequestDto {
-    private Long taskUid;
+public class DeleteStarRequestDto {
+
+    private Long starUid;
 }

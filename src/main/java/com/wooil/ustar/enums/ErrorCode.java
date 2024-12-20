@@ -46,12 +46,11 @@ public enum ErrorCode {
     // category: permission denied
     CATEGORY_002("permission denied this category"),
 
-    // Task not found
-    TASK_001("Task not found"),
+    // Star not found
+    STAR_001("Star not found"),
 
-    // Task: permission denied
-    TASK_002("permission denied this task")
-    ;
+    // Star: permission denied
+    STAR_002("permission denied this task");
 
 
     private String message;
