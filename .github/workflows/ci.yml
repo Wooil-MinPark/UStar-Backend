@@ -5,7 +5,7 @@ on:
     branches:
       - 'main'
       - 'develop'
-#      - 'feat/**'
+    #      - 'feat/**'
     tags:
       - 'v*'
   pull_request:
@@ -108,7 +108,11 @@ jobs:
 
       - name: 🛠️ Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} .
+          docker build \
+            --build-arg SPRING_JPA_HIBERNATE_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }} \
+            --build-arg JWT_ACCESS_TOKEN_VALIDITY=${{ secrets.JWT_ACCESS_TOKEN_VALIDITY }} \
+            --build-arg JWT_REFRESH_TOKEN_VALIDITY=${{ secrets.JWT_REFRESH_TOKEN_VALIDITY }}  \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} .
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/ustar:${{ steps.set_tag.outputs.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/ustar:latest
 
       - name: Login to Docker Hub
