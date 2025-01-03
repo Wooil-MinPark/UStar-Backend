@@ -1,7 +1,7 @@
 package com.wooil.ustar.mapper;
 
 import com.wooil.ustar.domain.Star;
-import com.wooil.ustar.dto.task.StarResDto;
+import com.wooil.ustar.dto.star.StarResDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +15,8 @@ public class StarMapper {
             .starTodayDate(star.getStarTodayDate())
             .categoryUid(star.getCategory().getCategoryUid())
             .categoryName(star.getCategory().getCategoryName())
+            .starCoordinateX(star.getStarCoordinateX())
+            .starCoordinateY(star.getStarCoordinateY())
             .build();
     }
 

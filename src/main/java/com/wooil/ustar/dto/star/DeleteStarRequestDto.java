@@ -1,4 +1,4 @@
-package com.wooil.ustar.dto.task;
+package com.wooil.ustar.dto.star;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

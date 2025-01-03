@@ -2,10 +2,10 @@ package com.wooil.ustar.controller;
 
 import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.dto.response.APIResponse;
-import com.wooil.ustar.dto.task.CreateStarRequestDto;
-import com.wooil.ustar.dto.task.DeleteStarRequestDto;
-import com.wooil.ustar.dto.task.StarResDto;
-import com.wooil.ustar.dto.task.UpdateStarRequestDto;
+import com.wooil.ustar.dto.star.CreateStarRequestDto;
+import com.wooil.ustar.dto.star.DeleteStarRequestDto;
+import com.wooil.ustar.dto.star.StarResDto;
+import com.wooil.ustar.dto.star.UpdateStarRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.service.StarService;

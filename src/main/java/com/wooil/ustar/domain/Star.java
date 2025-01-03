@@ -47,6 +47,12 @@ public class Star {
     @Column(name = "star_today_date", nullable = false)
     private LocalDate starTodayDate;
 
+    @Column(name = "star_coordinate_x", nullable = false)
+    private Integer starCoordinateX;
+
+    @Column(name = "star_coordinate_y", nullable = false)
+    private Integer starCoordinateY;
+
     @CreatedDate
     @Column(name = "star_created_at", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -61,13 +67,16 @@ public class Star {
     @JoinColumn(name = "category_uid", nullable = false)
     private Category category;
 
+
     @Builder
     public Star(Long starUid, String starMessage, Integer starTimeDuration, LocalDate starTodayDate,
-        Category category) {
+        Category category,Integer starCoordinateX, Integer starCoordinateY) {
         this.starUid = starUid;
         this.starMessage = starMessage;
         this.starTimeDuration = starTimeDuration;
         this.starTodayDate = starTodayDate;
         this.category = category;
+        this.starCoordinateX = starCoordinateX;
+        this.starCoordinateY = starCoordinateY;
     }
 }

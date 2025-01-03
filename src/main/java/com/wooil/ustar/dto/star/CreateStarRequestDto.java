@@ -1,4 +1,4 @@
-package com.wooil.ustar.dto.task;
+package com.wooil.ustar.dto.star;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateStarRequestDto {
-    private Long starUid;
+public class CreateStarRequestDto {
+
     private String starMessage;
     private Integer starTimeDuration;
     private LocalDate starTodayDate;
     private Long categoryUid;
+    private Integer starCoordinateX;
+    private Integer starCoordinateY;
 }

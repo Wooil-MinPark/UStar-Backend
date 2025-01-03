@@ -5,10 +5,10 @@ import com.wooil.ustar.Util.userDetails.CustomUserDetails;
 import com.wooil.ustar.domain.Category;
 import com.wooil.ustar.domain.Star;
 import com.wooil.ustar.domain.User;
-import com.wooil.ustar.dto.task.CreateStarRequestDto;
-import com.wooil.ustar.dto.task.DeleteStarRequestDto;
-import com.wooil.ustar.dto.task.StarResDto;
-import com.wooil.ustar.dto.task.UpdateStarRequestDto;
+import com.wooil.ustar.dto.star.CreateStarRequestDto;
+import com.wooil.ustar.dto.star.DeleteStarRequestDto;
+import com.wooil.ustar.dto.star.StarResDto;
+import com.wooil.ustar.dto.star.UpdateStarRequestDto;
 import com.wooil.ustar.enums.ErrorCode;
 import com.wooil.ustar.exception.CustomException;
 import com.wooil.ustar.mapper.StarMapper;
@@ -54,6 +54,8 @@ public class StarService {
                 .starMessage(request.getStarMessage())
                 .starTimeDuration(request.getStarTimeDuration())
                 .starTodayDate(request.getStarTodayDate())
+                .starCoordinateX(request.getStarCoordinateX())
+                .starCoordinateY(request.getStarCoordinateY())
                 .build();
 
             /// star category에 추가
@@ -134,6 +136,16 @@ public class StarService {
             /// today 변경 (안쓸듯?)
             if (request.getStarTodayDate() != null) {
                 star.setStarTodayDate(request.getStarTodayDate());
+            }
+            
+            
+            // 별 x 좌표
+            if (request.getStarCoordinateX() != null) {
+                star.setStarCoordinateX(request.getStarCoordinateX());
+            }
+            // 별 y 좌표
+            if (request.getStarCoordinateY() != null) {
+                star.setStarCoordinateY(request.getStarCoordinateY());
             }
 
             // 카테고리 변경이 요청된 경우
